@@ -5,17 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * @author lizhi
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class User {
+public class Policy {
     private String id;
-    private double money;
-    private List<Attribute> attributes;
+
+    private String resourceId;
+
+    private String ownerId;
+
+    private String content;
 }

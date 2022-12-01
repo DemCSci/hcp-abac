@@ -2,6 +2,7 @@ package com.lei.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.*;
+import org.hyperledger.fabric.sdk.Channel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -108,11 +109,17 @@ public class GatewayConfig {
         return network.getContract(this.contractName);
     }
 
+    @Bean
+    public Channel channel(Network network) {
+        return network.getChannel();
+    }
+
     private static X509Certificate readX509Certificate(final Path certificatePath) throws IOException, CertificateException {
         try (Reader certificateReader = Files.newBufferedReader(certificatePath, StandardCharsets.UTF_8)) {
             return Identities.readX509Certificate(certificateReader);
         }
     }
+
 
     private static PrivateKey getPrivateKey(final Path privateKeyPath) throws IOException, InvalidKeyException {
         try (Reader privateKeyReader = Files.newBufferedReader(privateKeyPath, StandardCharsets.UTF_8)) {
