@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
@@ -214,6 +215,45 @@ func (s *SmartContract) AddAttribute(ctx contractapi.TransactionContextInterface
 	return err
 }
 
+// 发布私有属性
+func (s *SmartContract) PublishPrivateAttribute(ctx contractapi.TransactionContextInterface, request string) error {
+
+	clientID, err := s.GetSubmittingClientIdentity(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	var attribute model.Attribute
+	err = json.Unmarshal([]byte(request), &attribute)
+	if err != nil {
+		return err
+	}
+
+	//判断是否 增加公有属性 还是私有属性
+	if attribute.Type == "PRIVATE" {
+		// 判断该资源是否存在
+		exist, err2 := s.ResourceExists(ctx, attribute.ResourceId)
+		if err2 != nil {
+			return err2
+		}
+		if !exist {
+			return fmt.Errorf("要增加的私有属性 该资源不存在")
+		}
+		//直接放进去
+		attribute.Owner = clientID
+		attributeAsJsonByte, err := json.Marshal(attribute)
+		if err != nil {
+			return err
+		}
+		ctx.GetStub().PutState(attribute.Id, attributeAsJsonByte)
+	} else {
+		//公有属性
+		return fmt.Errorf("can only add private attribute")
+	}
+	return err
+}
+
 //查询属性
 func (s *SmartContract) FindAttributeById(ctx contractapi.TransactionContextInterface, attributeId string) (*model.Attribute, error) {
 
@@ -302,9 +342,9 @@ func (s *SmartContract) BuyPrivateAttribute(ctx contractapi.TransactionContextIn
 	//分别存储buyer 和seller
 	buyerAsJsonByte, err := json.Marshal(buyer)
 	sellerAsJsonByte, err := json.Marshal(seller)
-	ctx.GetStub().PutState(buyer.ID, buyerAsJsonByte)
-	ctx.GetStub().PutState(seller.ID, sellerAsJsonByte)
 
+	ctx.GetStub().PutState(seller.ID, sellerAsJsonByte)
+	ctx.GetStub().PutState(buyer.ID, buyerAsJsonByte)
 	return err
 }
 
@@ -366,6 +406,37 @@ func (s *SmartContract) ResourceExists(ctx contractapi.TransactionContextInterfa
 
 // returns all resource found in world state
 func (s *SmartContract) GetAllResource(ctx contractapi.TransactionContextInterface) ([]*model.Resource, error) {
+
+	startKey := "resource:"
+	endKey := string(BytesPrefix([]byte(startKey)))
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	var resources []*model.Resource
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var resource model.Resource
+
+		err = json.Unmarshal(queryResponse.Value, &resource)
+		if err != nil {
+			return nil, err
+		}
+		resources = append(resources, &resource)
+	}
+
+	return resources, nil
+}
+
+//策略决策部分
+func (s *SmartContract) Decide(ctx contractapi.TransactionContextInterface, request string) ([]*model.Resource, error) {
 
 	startKey := "resource:"
 	endKey := string(BytesPrefix([]byte(startKey)))

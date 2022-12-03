@@ -39,7 +39,7 @@ public class AttributeController {
         request.setId("attribute:" + request.getResourceId() + ":" + UUID.randomUUID().toString());
         byte[] result = transaction.submit(JsonUtil.obj2Json(request));
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(2);
         map.put("txId", transaction.getTransactionId());
         map.put("data", new String(result));
         return JsonData.buildSuccess(map);

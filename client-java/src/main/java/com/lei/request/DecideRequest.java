@@ -1,2 +1,21 @@
-package com.lei.request;public class DecideRequest {
+package com.lei.request;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * @author lizhi
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class DecideRequest {
+    private String requestId;
+
+    private String resourceId;
+
+
 }
