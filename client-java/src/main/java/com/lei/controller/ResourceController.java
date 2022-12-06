@@ -43,7 +43,6 @@ public class ResourceController {
         request.setOwner("");
         Transaction transaction = contract.createTransaction("CreateResource")
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
-
         byte[] invokeResult = transaction.submit(JSON.toJSONString(request));
         log.info("调用结果:" + new String(invokeResult));
         String transactionId = transaction.getTransactionId();

@@ -435,33 +435,105 @@ func (s *SmartContract) GetAllResource(ctx contractapi.TransactionContextInterfa
 	return resources, nil
 }
 
-//策略决策部分
-func (s *SmartContract) Decide(ctx contractapi.TransactionContextInterface, request string) ([]*model.Resource, error) {
+//策略决策部分 不写入访问记录
+func (s *SmartContract) Decide(ctx contractapi.TransactionContextInterface, request string) (string, error) {
+	//1. 查询资源
+	//2. 根据资源取回策略
+	//3. 查询策略中需要的主体属性和客体属性
+	//4. 根据策略进行决策
 
-	startKey := "resource:"
-	endKey := string(BytesPrefix([]byte(startKey)))
-	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
-
+	// 先来个简易版
+	var decideRequest model.DecideRequest
+	err := json.Unmarshal([]byte(request), &decideRequest)
 	if err != nil {
-		return nil, err
+		return "false", err
 	}
-	defer resultsIterator.Close()
-
-	var resources []*model.Resource
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-		if err != nil {
-			return nil, err
-		}
-
-		var resource model.Resource
-
-		err = json.Unmarshal(queryResponse.Value, &resource)
-		if err != nil {
-			return nil, err
-		}
-		resources = append(resources, &resource)
+	//验证请求者身份
+	requesterId := decideRequest.RequesterId
+	//验证客户端是否是请求者id
+	clientID, err := s.GetSubmittingClientIdentity(ctx)
+	if err != nil {
+		return "false", err
+	}
+	if clientID != requesterId {
+		return "false", fmt.Errorf("请求者身份验证不通过")
 	}
 
-	return resources, nil
+	//查询资源
+	//resource, err := s.FindResourceById(ctx, decideRequest.RequesterId)
+	//根据资源查找对应的策略
+	//这里暂时写死一个资源的策略
+	//获取主体的属性
+	subject, err := s.FindUserById(ctx, clientID)
+	attributeMap := make(map[string]interface{})
+	for i := 0; i < len(subject.Attributes); i++ {
+		attributeMap[subject.Attributes[i].Key] = subject.Attributes[i].Value
+	}
+
+	if attributeMap["age"] == "40" && attributeMap["occupation"] == "doctor" {
+		return "true", nil
+	}
+	return "false", nil
+
+}
+
+//策略决策部分 写入访问记录
+func (s *SmartContract) DecideWithRecord(ctx contractapi.TransactionContextInterface, request string) (string, error) {
+	//1. 查询资源
+	//2. 根据资源取回策略
+	//3. 查询策略中需要的主体属性和客体属性
+	//4. 根据策略进行决策
+	//5. 写入访问记录
+
+	// 先来个简易版
+	var decideRequest model.DecideRequest
+	err := json.Unmarshal([]byte(request), &decideRequest)
+	if err != nil {
+		return "false", err
+	}
+	//验证请求者身份
+	requesterId := decideRequest.RequesterId
+	//验证客户端是否是请求者id
+	clientID, err := s.GetSubmittingClientIdentity(ctx)
+	if err != nil {
+		return "false", err
+	}
+	if clientID != requesterId {
+		return "false", fmt.Errorf("请求者身份验证不通过")
+	}
+
+	//查询资源
+	//resource, err := s.FindResourceById(ctx, decideRequest.RequesterId)
+	//根据资源查找对应的策略
+	//这里暂时写死一个资源的策略
+	//获取主体的属性
+	subject, err := s.FindUserById(ctx, clientID)
+	attributeMap := make(map[string]interface{})
+	for i := 0; i < len(subject.Attributes); i++ {
+		attributeMap[subject.Attributes[i].Key] = subject.Attributes[i].Value
+	}
+
+	if attributeMap["age"] == "40" && attributeMap["occupation"] == "doctor" {
+		var record model.Record
+		record.Id = decideRequest.Id
+		record.RequesterId = decideRequest.RequesterId
+		record.ResourceId = decideRequest.ResourceId
+		record.Response = "true"
+		recordJsonAsByte, _ := json.Marshal(record)
+		s.CreateRecord(ctx, string(recordJsonAsByte))
+		return "true", nil
+	}
+	return "false", nil
+
+}
+
+//访问记录相关
+func (s *SmartContract) CreateRecord(ctx contractapi.TransactionContextInterface, request string) error {
+
+	var record model.Record
+	err := json.Unmarshal([]byte(request), &record)
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(record.Id, []byte(request))
 }

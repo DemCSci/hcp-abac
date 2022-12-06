@@ -57,7 +57,6 @@ public class ChannelController {
     public JsonData getName() {
         String name = channel.getName();
         return JsonData.buildSuccess(name);
-
     }
 
     @GetMapping("/queryTransactionByID")

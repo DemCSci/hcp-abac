@@ -2,10 +2,7 @@ module chaincode-go
 
 go 1.18
 
-require (
-	github.com/hyperledger/fabric-contract-api-go v1.1.1
-	github.com/satori/go.uuid v1.2.0
-)
+require github.com/hyperledger/fabric-contract-api-go v1.1.1
 
 require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect

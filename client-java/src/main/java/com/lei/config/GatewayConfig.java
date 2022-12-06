@@ -94,11 +94,12 @@ public class GatewayConfig {
     }
 
     /**
-     * 获取通道
+     * 获取网络
      */
     @Bean
     public Network network(Gateway gateway) {
-        return gateway.getNetwork(this.channelName);
+        Network network = gateway.getNetwork(this.channelName);
+       return network;
     }
 
     /**
@@ -111,7 +112,8 @@ public class GatewayConfig {
 
     @Bean
     public Channel channel(Network network) {
-        return network.getChannel();
+        Channel channel = network.getChannel();
+        return channel;
     }
 
     private static X509Certificate readX509Certificate(final Path certificatePath) throws IOException, CertificateException {

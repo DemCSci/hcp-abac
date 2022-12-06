@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DecideRequest {
-    private String requestId;
+    private String id;
+
+    private String requesterId;
 
     private String resourceId;
 
