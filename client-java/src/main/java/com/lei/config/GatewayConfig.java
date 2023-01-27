@@ -19,12 +19,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- * TODO
  *
  * @author zlt
  * @version 1.0
  * @date 2022/2/16
- * <p>
  * Blog: https://zlt2000.gitee.io
  * Github: https://github.com/zlt2000
  */
@@ -86,8 +84,8 @@ public class GatewayConfig {
         //根据connection.json 获取Fabric网络连接对象
         Gateway.Builder builder = Gateway.createBuilder()
                 .identity(wallet, username)
-                .networkConfig(Paths.get(this.networkConfigPath));
-                //.discovery(true);
+                .networkConfig(Paths.get(this.networkConfigPath))
+                .discovery(true);
 
         //连接网关
         return builder.connect();

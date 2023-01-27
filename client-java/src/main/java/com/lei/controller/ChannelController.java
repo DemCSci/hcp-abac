@@ -1,8 +1,10 @@
 package com.lei.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.protos.peer.Query;
 import org.hyperledger.fabric.sdk.BlockInfo;
@@ -19,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/channel")
+@Api(tags = "与通道有关的操作")
 public class ChannelController {
     @Autowired
     private Channel channel;
@@ -36,11 +40,14 @@ public class ChannelController {
      * @throws ProposalException
      */
     @GetMapping("/queryBlockByTransactionID")
+    @ApiOperation("通过交易id查询区块")
     public JsonData queryBlockByTransactionID(String txId) throws InvalidArgumentException, ProposalException {
         BlockInfo blockInfo = channel.queryBlockByTransactionID(txId);
+
         return JsonData.buildSuccess(JSON.toJSONString(blockInfo));
     }
 
+    @ApiOperation("获取peer节点")
     @GetMapping("/peers")
     public JsonData getPeers() {
         Collection<Peer> peers = channel.getPeers();
@@ -53,12 +60,14 @@ public class ChannelController {
      * 获取通道的名字
      * @return
      */
+    @ApiOperation("获取通道的name")
     @GetMapping("/name")
     public JsonData getName() {
         String name = channel.getName();
         return JsonData.buildSuccess(name);
     }
 
+    @ApiOperation("根据id查询交易")
     @GetMapping("/queryTransactionByID")
     public JsonData queryTransactionByID(String txId) throws InvalidArgumentException, ProposalException {
         TransactionInfo transactionInfo = channel.queryTransactionByID(txId);
@@ -71,6 +80,7 @@ public class ChannelController {
      * 获取所有链码的名字
      * @return
      */
+    @ApiOperation("获取所有链码的名字")
     @GetMapping("/getChainCodeNames")
     public JsonData getChainCodeNames() {
         Collection<String> names = channel.getDiscoveredChaincodeNames();
@@ -78,18 +88,18 @@ public class ChannelController {
     }
 
     @GetMapping("/instantiatedChaincodes")
-    public JsonData test() throws InvalidArgumentException, ProposalException {
-        Collection<Peer> peers = channel.getPeers();
-        AtomicReference<Peer> peer = new AtomicReference<>();
-        peers.stream().forEach(obj -> {
-            if (obj.getName().equalsIgnoreCase("peer0.org1.example.com")) {
-                peer.set(obj);
-            }
-        });
-        log.info("peers:{}",peers);
-        List<Query.ChaincodeInfo> chaincodeInfos = channel.queryInstantiatedChaincodes(peer.get());
+    @ApiOperation("查询已经实例化的链码")
+    public JsonData instantiatedChaincodes() throws InvalidArgumentException, ProposalException {
+        Collection<Peer> org1MSP = channel.getPeersForOrganization("Org1MSP");
+        List<Query.ChaincodeInfo> chaincodeInfos = channel.queryInstantiatedChaincodes(org1MSP.iterator().next());
         log.info("已实例化的链码: {}", chaincodeInfos);
-
         return JsonData.buildSuccess(JsonUtil.obj2Json(chaincodeInfos));
+    }
+
+    @GetMapping("/getServiceDiscoveryProperties")
+    @ApiOperation("获取服务发现的properties")
+    public JsonData getServiceDiscoveryProperties() {
+        Properties serviceDiscoveryProperties = channel.getServiceDiscoveryProperties();
+        return JsonData.buildSuccess(serviceDiscoveryProperties);
     }
 }

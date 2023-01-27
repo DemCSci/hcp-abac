@@ -56,12 +56,12 @@ public enum BizCodeEnum {
 
 
     @Getter
-    private String message;
+    private final String message;
 
     @Getter
-    private int code;
+    private final int code;
 
-    private BizCodeEnum(int code, String message){
+    BizCodeEnum(int code, String message){
         this.code = code;
         this.message = message;
     }

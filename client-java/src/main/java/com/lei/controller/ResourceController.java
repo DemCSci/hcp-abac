@@ -1,12 +1,13 @@
 package com.lei.controller;
 
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.lei.controller.request.ResourceRequest;
 import com.lei.model.Resource;
 import com.lei.model.User;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/resource")
+@Api(tags = "资源相关")
 public class ResourceController {
 
     @Autowired
@@ -39,7 +41,7 @@ public class ResourceController {
 
     @PostMapping("/create")
     public JsonData createResource(@RequestBody ResourceRequest request) throws ContractException, InterruptedException, TimeoutException {
-        request.setId("resource:"+ UUID.randomUUID().toString());
+        request.setId("resource:"+ UUID.randomUUID());
         request.setOwner("");
         Transaction transaction = contract.createTransaction("CreateResource")
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));

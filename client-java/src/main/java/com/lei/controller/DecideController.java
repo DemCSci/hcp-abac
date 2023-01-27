@@ -4,6 +4,7 @@ import com.lei.model.User;
 import com.lei.request.DecideRequest;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
+import io.swagger.annotations.Api;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
 import org.hyperledger.fabric.gateway.Network;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/api/decide/v1")
+@Api("决策相关")
 public class DecideController {
     @Autowired
     private Contract contract;

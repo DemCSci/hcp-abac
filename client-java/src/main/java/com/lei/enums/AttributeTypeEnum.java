@@ -1,4 +1,4 @@
-package com.lei;
+package com.lei.enums;
 
 /**
  * @author lizhi

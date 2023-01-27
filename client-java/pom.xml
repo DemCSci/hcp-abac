@@ -12,9 +12,10 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>2.5.9</spring.boot.version>
-        <fabric-gateway-java.version>2.2.3</fabric-gateway-java.version>
-        <fastjson.version>1.2.79</fastjson.version>
+        <spring.boot.version>2.5.14</spring.boot.version>
+        <fabric-gateway-java.version>2.2.7</fabric-gateway-java.version>
+        <fastjson.version>2.0.21</fastjson.version>
+        <knife4j.version>4.0.0</knife4j.version>
     </properties>
 
     <dependencies>
@@ -35,9 +36,15 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
         </dependency>
     </dependencies>
 
@@ -58,7 +65,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.5.9</version>
+                <version>2.5.14</version>
                 <executions>
                     <execution>
                         <goals>

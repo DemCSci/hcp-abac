@@ -5,6 +5,8 @@ import com.lei.controller.request.BuyPrivateAttributeRequest;
 import com.lei.model.Attribute;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RestController
 @Slf4j
+@Api(tags = "属性操作相关接口")
 @RequestMapping("/api/attribute/v1")
 public class AttributeController {
 
@@ -31,12 +34,21 @@ public class AttributeController {
     @Autowired
     private Network network;
 
+    /**
+     * 发布私有属性
+     * @param request
+     * @return
+     * @throws ContractException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
     @PostMapping("/publish")
+    @ApiOperation("发布私有属性")
     public JsonData publish(@RequestBody AttributeRequest request) throws ContractException, InterruptedException, TimeoutException {
         Transaction transaction = contract.createTransaction("PublishPrivateAttribute")
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
 
-        request.setId("attribute:" + request.getResourceId() + ":" + UUID.randomUUID().toString());
+        request.setId("attribute:" + request.getResourceId() + ":" + UUID.randomUUID());
         byte[] result = transaction.submit(JsonUtil.obj2Json(request));
 
         Map<String, Object> map = new HashMap<>(2);
@@ -45,14 +57,30 @@ public class AttributeController {
         return JsonData.buildSuccess(map);
     }
 
+    /**
+     * 根据资源id查找属性
+     * @param resourceId
+     * @return
+     * @throws ContractException
+     */
     @GetMapping("/findByResourceId")
+    @ApiOperation("根据资源id查找属性")
     public JsonData find(String resourceId) throws ContractException {
         byte[] attributes = contract.evaluateTransaction("FindAttributeByResourceId", resourceId);
 
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(attributes, Attribute[].class));
     }
 
+    /**
+     * 购买私有属性
+     * @param request
+     * @return
+     * @throws ContractException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
     @PostMapping("/buy")
+    @ApiOperation("购买私有属性")
     public JsonData buy(@RequestBody BuyPrivateAttributeRequest request) throws ContractException, InterruptedException, TimeoutException {
         Transaction transaction = contract.createTransaction("BuyPrivateAttribute")
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));

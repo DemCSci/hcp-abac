@@ -1,15 +1,13 @@
 package com.lei.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.fabric.sdk.BlockEvent;
-import org.hyperledger.fabric.sdk.ChaincodeEvent;
-import org.hyperledger.fabric.sdk.ChaincodeEventListener;
+
 import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
+
 
 import java.util.regex.Pattern;
 

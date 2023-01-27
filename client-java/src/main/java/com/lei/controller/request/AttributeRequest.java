@@ -17,8 +17,13 @@ public class AttributeRequest {
      * 属性拥有者
      */
     private String ownerId;
-
+    /**
+     * 属性价格
+     */
     private double money;
+    /**
+     * 属性的key
+     */
     private String key;
     private String value;
     /**

@@ -1,12 +1,13 @@
 package com.lei.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.lei.AttributeTypeEnum;
+import com.alibaba.fastjson2.JSON;
+import com.lei.enums.AttributeTypeEnum;
 import com.lei.controller.request.AttributeRequest;
 import com.lei.model.Attribute;
 import com.lei.model.User;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
@@ -16,8 +17,7 @@ import org.hyperledger.fabric.sdk.Peer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.json.Json;
-import java.nio.charset.StandardCharsets;
+
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
+@Api("用户相关")
 public class UserController {
 
 
@@ -81,7 +82,7 @@ public class UserController {
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
 
         Attribute attribute = Attribute.builder()
-                .id("attribute:" + UUID.randomUUID().toString())
+                .id("attribute:" + UUID.randomUUID())
                 .type(AttributeTypeEnum.PUBLIC.name())
                 .ownerId(request.getOwnerId())
                 .key(request.getKey())
