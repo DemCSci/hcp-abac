@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
 
 import java.util.List;
 
@@ -30,4 +31,9 @@ public class TransactionActionInfo {
      * 写集合
      */
     private List<KVWrite> writeList;
+
+    /**
+     * 读集合
+     */
+    private List<KVRead> readList;
 }

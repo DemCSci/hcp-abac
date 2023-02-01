@@ -2,16 +2,13 @@ package com.lei.vo;
 
 import lombok.Data;
 
-import java.util.Map;
-
 /**
  * @author lei
  * @since 2023/2/1
- * 写集
+ * 读集
  */
-
 @Data
-public class KVWrite {
+public class KVRead {
     private String key;
-    private String value;
+    private String version;
 }

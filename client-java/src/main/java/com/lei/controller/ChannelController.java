@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lei.config.GatewayConfig;
+import com.lei.service.ChannelService;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
 import com.lei.vo.HeightInfo;
@@ -38,11 +39,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequestMapping("/api/v1/channel")
 @Api(tags = "与通道有关的操作")
 public class ChannelController {
+
+    @Autowired
+    private ChannelService channelService;
+
     @Autowired
     private Channel channel;
 
-    @Autowired
-    private GatewayConfig gatewayConfig;
 
     /**
      * 根据交易id查询区块
@@ -55,7 +58,6 @@ public class ChannelController {
     @ApiOperation("通过交易id查询区块")
     public JsonData queryBlockByTransactionID(String txId) throws InvalidArgumentException, ProposalException {
         BlockInfo blockInfo = channel.queryBlockByTransactionID(txId);
-
         return JsonData.buildSuccess(JSON.toJSONString(blockInfo));
     }
 
@@ -134,111 +136,7 @@ public class ChannelController {
     @GetMapping("/queryBlockByHash")
     @ApiOperation("根据hash查询区块")
     public JsonData queryBlockByHash(String hash) throws DecoderException, InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
-        BlockInfo blockInfo = channel.queryBlockByHash(Hex.decodeHex(hash));
-
-        String channelId = blockInfo.getChannelId();
-        long blockNumber = blockInfo.getBlockNumber();
-        String dataHash = Hex.encodeHexString(blockInfo.getDataHash());
-        String previousHash = Hex.encodeHexString(blockInfo.getPreviousHash());
-        int transactionCount = blockInfo.getTransactionCount();
-
-        //log.info("channelId={},blockNumber={},dataHash={},previousHash={},transactionCount={}",channelId,
-        //        blockNumber,dataHash,previousHash, transactionCount);
-        int envelopeCount = blockInfo.getEnvelopeCount();
-        //log.info("envelopeCount={}",envelopeCount);
-        Iterable<BlockInfo.EnvelopeInfo> envelopeInfoIterable = blockInfo.getEnvelopeInfos();
-
-        List<TransactionEnvelopeInfo> transactions = new ArrayList<>();
-
-        for (BlockInfo.EnvelopeInfo envelopeInfo : envelopeInfoIterable) {
-            String envelopeInfoChannelId = envelopeInfo.getChannelId();
-            String type = envelopeInfo.getType().name();
-            BlockInfo.EnvelopeInfo.IdentitiesInfo creator = envelopeInfo.getCreator();
-            String creatorId = creator.getId();
-            String creatorMspid = creator.getMspid();
-            String nonce = Hex.encodeHexString(envelopeInfo.getNonce());
-            Date timestamp = envelopeInfo.getTimestamp();
-            String transactionID = envelopeInfo.getTransactionID();
-            byte validationCode = envelopeInfo.getValidationCode();
-            String validation = TransactionPackage.TxValidationCode.forNumber(validationCode).name();
-            //log.info("envelopeInfoChannelId={},type={},creatorId={},creatorMspid={},nonce={},timestamp={},transactionID={},validation={}",
-            //        envelopeInfoChannelId, type,creatorId,creatorMspid, nonce, timestamp, transactionID, validation);
-
-
-            // 强转类型
-            BlockInfo.TransactionEnvelopeInfo transactionEnvelopeInfo = (BlockInfo.TransactionEnvelopeInfo) envelopeInfo;
-            List<TransactionActionInfo> transactionActionInfos = new ArrayList<>();
-            // 获取操作事务的信息
-            for (BlockInfo.TransactionEnvelopeInfo.TransactionActionInfo transactionActionInfo : transactionEnvelopeInfo.getTransactionActionInfos()) {
-
-                // 链码名称
-                String chaincodeIDName = transactionActionInfo.getChaincodeIDName();
-                // 链码版本
-                String chaincodeIDVersion = transactionActionInfo.getChaincodeIDVersion();
-                //log.info("proposal chaincodeIDName:{}, chaincodeIDVersion: {}", chaincodeIDName, chaincodeIDVersion);
-
-                // 操作事务的读写集
-                TxReadWriteSetInfo rwsetInfo = transactionActionInfo.getTxReadWriteSet();
-                List<KVWrite> kvWriteList = new ArrayList<>();
-                if (null != rwsetInfo) {
-
-                    //我只要了写集合的数据
-                    for (TxReadWriteSetInfo.NsRwsetInfo nsRwsetInfo : rwsetInfo.getNsRwsetInfos()) {
-                        // 含有默认链码 _lifecycle  和 自定义链码
-                        String namespace = nsRwsetInfo.getNamespace();
-                        // 只要符合要求的链码的
-                        if (!namespace.equals(gatewayConfig.getContractName())) {
-                            //log.error("链码名称不正确 跳过 ,namespace ={}", namespace);
-                            continue;
-                        }
-                        KvRwset.KVRWSet rws = nsRwsetInfo.getRwset();
-                        for (KvRwset.KVWrite writeList : rws.getWritesList()) {
-                            //String valAsString = printableString(new String(writeList.getValue().toByteArray(), Charset.forName("UTF-8")));
-                            String key = writeList.getKey();
-                            //log.info("Namespace {}  key {} has value '{}' ", namespace, writeList.getKey(), valAsString);
-                            String value = new String(writeList.getValue().toByteArray(), Charset.forName("UTF-8"));
-                            //if (StringUtils.isNotBlank(valAsString)) {
-                            //   value = JSON.parseObject(valAsString, Map.class);
-                            //}
-                            KVWrite kvWrite = new KVWrite();
-                            kvWrite.setKey(key);
-                            kvWrite.setValue(value);
-                            kvWriteList.add(kvWrite);
-                        }
-                    }
-                }
-                TransactionActionInfo actionInfo = TransactionActionInfo.builder().chaincodeIDName(chaincodeIDName).chaincodeIDVersion(chaincodeIDVersion)
-                        .writeList(kvWriteList).build();
-                transactionActionInfos.add(actionInfo);
-            }
-            TransactionEnvelopeInfo envelopeInfo1 = TransactionEnvelopeInfo.builder().channelId(channelId).creatorId(creatorId).creatorMspid(creatorMspid)
-                    .nonce(nonce).timestamp(timestamp).transactionID(transactionID).validation(validation)
-                    .transactionActionInfos(transactionActionInfos).build();
-            transactions.add(envelopeInfo1);
-
-        }
-
-        com.lei.vo.BlockInfo info = com.lei.vo.BlockInfo.builder().channelId(channelId)
-                .blockNumber(blockNumber)
-                .dataHash(dataHash)
-                .previousHash(previousHash)
-                .transactionCount(transactionCount)
-                .envelopeCount(envelopeCount)
-                .transactions(transactions).build();
-
-        return JsonData.buildSuccess(info);
+        return channelService.queryBlockByHash(hash);
     }
-    static String printableString(final String string) {
-        int maxLogStringLength = 64;
-        if (string == null || string.length() == 0) {
-            return string;
-        }
 
-        String ret = string.replaceAll("[^\\p{Print}]", "?");
-
-        ret = ret.substring(0, Math.min(ret.length(), maxLogStringLength)) + (ret.length() > maxLogStringLength ? "..." : "");
-
-        return ret;
-
-    }
 }
