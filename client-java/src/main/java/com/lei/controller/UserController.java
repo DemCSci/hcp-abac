@@ -51,7 +51,6 @@ public class UserController {
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
         User user = User.builder()
                 .money(100)
-                .attributes(new ArrayList<>())
                 .build();
         byte[] invokeResult = transaction.submit(JSON.toJSONString(user));
         log.info("调用结果:" + new String(invokeResult));
@@ -76,27 +75,4 @@ public class UserController {
         return JsonData.buildSuccess(new String(history));
     }
 
-    @PostMapping("/addAttribute")
-    public JsonData  addAttribute(@RequestBody AttributeRequest request) throws ContractException, InterruptedException, TimeoutException {
-        Transaction transaction = contract.createTransaction("AddAttribute")
-                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
-
-        Attribute attribute = Attribute.builder()
-                .id("attribute:" + UUID.randomUUID())
-                .type(AttributeTypeEnum.PUBLIC.name())
-                .ownerId(request.getOwnerId())
-                .key(request.getKey())
-                .value(request.getValue())
-                .notBefore(request.getNotBefore())
-                .notAfter(request.getNotAfter())
-                .build();
-
-        byte[] invokeResult = transaction.submit(JsonUtil.obj2Json(attribute));
-        log.info("调用结果:" +  new String(invokeResult));
-        String transactionId = transaction.getTransactionId();
-        Map<String, String > res = new HashMap(2);
-        res.put("txId", transactionId);
-        res.put("data", JsonUtil.obj2Json(invokeResult));
-        return JsonData.buildSuccess(res);
-    }
 }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @ApiModel("属性实体类")
 public class Attribute {
     /**
-     * 私有属性id格式 attribute:resourceId:uuid
+     * 私有属性id格式
      */
     @ApiModelProperty("属性id")
     private String id;

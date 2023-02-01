@@ -1,5 +1,6 @@
 package com.lei.config;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.*;
 import org.hyperledger.fabric.sdk.Channel;
@@ -28,6 +29,7 @@ import java.security.cert.X509Certificate;
  */
 @Slf4j
 @Configuration
+@Data
 public class GatewayConfig {
     /**
      * wallet文件夹路径
