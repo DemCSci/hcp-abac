@@ -17,6 +17,7 @@ import org.hyperledger.fabric.sdk.Peer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.json.Json;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
@@ -69,6 +70,12 @@ public class AttributeController {
         return JsonData.buildSuccess(res);
     }
 
+    @DeleteMapping("/clear")
+    @ApiOperation("清空该用户公有属性")
+    public JsonData clearPublicAttribute() {
+
+        return null;
+    }
     /**
      * 发布私有属性
      * @param request
@@ -128,4 +135,7 @@ public class AttributeController {
         map.put("data", new String(result));
         return JsonData.buildSuccess(map);
     }
+
+
+
 }

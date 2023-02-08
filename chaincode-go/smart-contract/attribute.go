@@ -163,8 +163,8 @@ func (s *SmartContract) BuyPrivateAttribute(ctx contractapi.TransactionContextIn
 	}
 
 	////转账
-	//seller.Money += attribute.Money
-	//buyer.Money -= attribute.Money
+	seller.Money += attribute.Money
+	buyer.Money -= attribute.Money
 
 	//增加购买者的私有属性
 	//attribute:private:userid:resourceid:key
@@ -176,11 +176,11 @@ func (s *SmartContract) BuyPrivateAttribute(ctx contractapi.TransactionContextIn
 	}
 	ctx.GetStub().PutState(levelDbId, attributeAsBytes)
 	////分别存储buyer 和seller
-	//buyerAsJsonByte, err := json.Marshal(buyer)
-	//sellerAsJsonByte, err := json.Marshal(seller)
+	buyerAsJsonByte, err := json.Marshal(buyer)
+	sellerAsJsonByte, err := json.Marshal(seller)
 
-	//ctx.GetStub().PutState(seller.ID, sellerAsJsonByte)
-	//ctx.GetStub().PutState(buyer.ID, buyerAsJsonByte)
+	ctx.GetStub().PutState(seller.ID, sellerAsJsonByte)
+	ctx.GetStub().PutState(buyer.ID, buyerAsJsonByte)
 	return err
 }
 
