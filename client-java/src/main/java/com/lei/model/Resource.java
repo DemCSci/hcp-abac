@@ -28,4 +28,5 @@ public class Resource {
     @ApiModelProperty("资源描述信息")
     private String description;
 
+    private String[] controllers;
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"log"
 )
 
 /**
@@ -24,6 +25,7 @@ func (s *SmartContract) CreateResource(ctx contractapi.TransactionContextInterfa
 
 	resource.Owner = clientID
 	exists, err := s.ResourceExists(ctx, resource.Id)
+	resource.Controllers = []string{clientID}
 
 	if err != nil {
 		return err
@@ -42,7 +44,7 @@ func (s *SmartContract) CreateResource(ctx contractapi.TransactionContextInterfa
 
 //查询资源
 func (s *SmartContract) FindResourceById(ctx contractapi.TransactionContextInterface, resourceId string) (*model.Resource, error) {
-
+	log.Printf("要查找的资源id:%v", resourceId)
 	resourceAsByte, err := ctx.GetStub().GetState(resourceId)
 	if err != nil {
 		return nil, fmt.Errorf("查询资源失败")
@@ -53,6 +55,16 @@ func (s *SmartContract) FindResourceById(ctx contractapi.TransactionContextInter
 	return &resource, err
 }
 
+//删除资源
+func (s *SmartContract) DeleteResourceById(ctx contractapi.TransactionContextInterface, resourceId string) (string, error) {
+
+	err := ctx.GetStub().DelState(resourceId)
+	if err != nil {
+		return "删除资源失败", fmt.Errorf("删除资源失败")
+	}
+
+	return "删除资源成功", nil
+}
 func (s *SmartContract) ResourceExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
 
 	resource, err := ctx.GetStub().GetState(id)
@@ -92,4 +104,31 @@ func (s *SmartContract) GetAllResource(ctx contractapi.TransactionContextInterfa
 	}
 
 	return resources, nil
+}
+
+//add resource controller
+func (s *SmartContract) AddResourceController(ctx contractapi.TransactionContextInterface, request string) (bool, error) {
+	var requestObj model.AddResourceControllerRequest
+	err := json.Unmarshal([]byte(request), &requestObj)
+	if err != nil {
+		return false, fmt.Errorf("反序列化请求失败")
+	}
+	identity, err := s.GetSubmittingClientIdentity(ctx)
+	if err != nil {
+		return false, fmt.Errorf("获取提交者身份异常")
+	}
+	resource, err := s.FindResourceById(ctx, requestObj.ResourceId)
+	if err != nil {
+		return false, fmt.Errorf("查找资源失败")
+	}
+	if identity != resource.Owner {
+		return false, fmt.Errorf("抱歉，您不是该资源的拥有者")
+	}
+	resource.Controllers = append(resource.Controllers, requestObj.ControllerId)
+	reourceByte, err := json.Marshal(resource)
+	if err != nil {
+		return false, fmt.Errorf("序列化失败")
+	}
+	ctx.GetStub().PutState(resource.Id, reourceByte)
+	return true, nil
 }

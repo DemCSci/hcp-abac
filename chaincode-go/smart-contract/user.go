@@ -2,7 +2,6 @@ package abac
 
 import (
 	"chaincode-go/model"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
@@ -147,9 +146,11 @@ func (s *SmartContract) GetSubmittingClientIdentity(ctx contractapi.TransactionC
 	if err != nil {
 		return "", fmt.Errorf("Failed to read clientID: %v", err)
 	}
-	decodeID, err := base64.StdEncoding.DecodeString(b64ID)
-	if err != nil {
-		return "", fmt.Errorf("failed to base64 decode clientID: %v", err)
-	}
-	return "user:" + string(decodeID), nil
+	//decodeID, err := base64.StdEncoding.DecodeString(b64ID)
+	//if err != nil {
+	//	return "", fmt.Errorf("failed to base64 decode clientID: %v", err)
+	//}
+	identify := "user:" + string(b64ID)
+	//fmt.Println(identify)
+	return identify, nil
 }

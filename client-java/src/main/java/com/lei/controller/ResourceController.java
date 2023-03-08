@@ -2,6 +2,7 @@ package com.lei.controller;
 
 
 import com.alibaba.fastjson2.JSON;
+import com.lei.controller.request.AddResourceControllerRequest;
 import com.lei.controller.request.ResourceRequest;
 import com.lei.model.Resource;
 import com.lei.model.User;
@@ -59,5 +60,33 @@ public class ResourceController {
         log.info("调用结果:" + new String(result));
 
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(result, Resource[].class));
+    }
+
+    @DeleteMapping("/delete")
+    public JsonData deleteResourceById(@RequestParam("id")String resourceId) throws ContractException, InterruptedException, TimeoutException {
+
+        byte[] result = contract.submitTransaction("DeleteResourceById", resourceId);
+
+        log.info("调用结果:" + new String(result));
+
+        return JsonData.buildSuccess(new String(result));
+    }
+
+    @GetMapping("/find")
+    public JsonData createResource(@RequestParam("id")String resourceId) throws ContractException, InterruptedException, TimeoutException {
+
+        byte[] result = contract.evaluateTransaction("FindResourceById");
+
+        log.info("调用结果:" + new String(result));
+
+        return JsonData.buildSuccess(JsonUtil.bytes2Obj(result, Resource.class));
+    }
+
+    @PostMapping("/addController")
+    public JsonData addController(@RequestBody AddResourceControllerRequest request) throws ContractException, InterruptedException, TimeoutException {
+        String req = JsonUtil.obj2Json(request);
+        log.info(req);
+        byte[] bytes = contract.submitTransaction("AddResourceController",req );
+        return JsonData.buildSuccess(new String(bytes));
     }
 }

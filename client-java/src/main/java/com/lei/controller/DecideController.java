@@ -5,6 +5,7 @@ import com.lei.request.DecideRequest;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
 import org.hyperledger.fabric.gateway.Network;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 @RestController
 @RequestMapping("/api/decide/v1")
 @Api("决策相关")
+@Slf4j
 public class DecideController {
     @Autowired
     private Contract contract;
@@ -31,13 +33,16 @@ public class DecideController {
 
     @PostMapping("/decideNoRecord")
     public JsonData decideNoRecord(@RequestBody DecideRequest decideRequest) throws ContractException {
-        Transaction transaction = contract.createTransaction("Decide");
+        Transaction transaction = contract.createTransaction("DecideNoRecord");
         DecideRequest request = DecideRequest.builder()
                 .id(transaction.getTransactionId())
                 .requesterId(decideRequest.getRequesterId())
                 .resourceId(decideRequest.getResourceId())
                 .build();
-        byte[] result = transaction.evaluate(JsonUtil.obj2Json(request));
+
+        String json = JsonUtil.obj2Json(request);
+        log.info("request:{}",json);
+        byte[] result = transaction.evaluate(json);
 
         return JsonData.buildSuccess(new String(result));
     }

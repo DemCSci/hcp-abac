@@ -44,7 +44,7 @@ public class AttributeTest {
 
     @Test
     public void testAddPublicAttribute() throws ContractException {
-
+        
         long startTime  = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
             Transaction transaction = contract.createTransaction("AddAttribute")
@@ -177,4 +177,6 @@ public class AttributeTest {
     //        out.flush();
     //    }
     //}
+
+
 }
