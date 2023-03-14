@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 func DecideNoRecord(w http.ResponseWriter, r *http.Request) {
@@ -39,14 +38,14 @@ func DecideNoRecord(w http.ResponseWriter, r *http.Request) {
 		ResourceId:  request.RequesterId,
 		Response:    contractResponse1,
 	}
-	util.Pool.Submit(func() {
-		contract.CreateRecord(contract.Contract2, *record)
-		time.Sleep(time.Second * 1)
-	})
+	//util.Pool.Submit(func() {
+	//	contract.CreateRecord(contract.Contract2, *record)
+	//	time.Sleep(time.Second * 1)
+	//})
 
 	//contract.CreateRecord(contract.Contract1, *record)
-	//recordJsonByte, err := json.Marshal(record)
-	//util.Rdb.Publish(util.Ctx, "test-channel", string(recordJsonByte))
+	recordJsonByte, err := json.Marshal(record)
+	util.Rdb.Publish(util.Ctx, "test-channel", string(recordJsonByte))
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, contractResponse1)
 }

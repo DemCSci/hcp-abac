@@ -14,7 +14,7 @@ func GetAllUsers(w http.ResponseWriter, request *http.Request) {
 
 func AddUser(w http.ResponseWriter, request *http.Request) {
 
-	record := contract.AddUser(contract.Contract3)
+	record := contract.AddUser(contract.Contract2)
 
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, record)

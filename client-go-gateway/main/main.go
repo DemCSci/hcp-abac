@@ -87,19 +87,60 @@ func main() {
 		CertPath:     certPath3,
 		KeyPath:      keyPath3,
 		TlsCertPath:  tlsCertPath3,
-		PeerEndpoint: "peer1.hard.ifantasy.net:7351",
+		PeerEndpoint: "peer1.hard.ifantasy.net:7451",
 		GatewayPeer:  "peer1.hard.ifantasy.net",
 	}
 	gateway3 := newGateway(clientInfo3)
 	defer gateway3.Close()
 	network3 := gateway3.GetNetwork(channelName)
 	contract.Contract3 = network3.GetContract(chaincodeName)
+	log.Println("peer1.hard.ifantasy.net 连接成功")
+
+	/////////////////////////////clientInfo4
+	cryptoPath4 := "E:/code/orgs/org4.ifantasy.net"
+	certPath4 := path.Join(cryptoPath3, "registers", "user1", "msp", "signcerts", "cert.pem")
+	keyPath4 := path.Join(cryptoPath3, "registers", "user1", "msp", "keystore")
+	tlsCertPath4 := path.Join(cryptoPath3, "assets", "tls-ca-cert.pem")
+	clientInfo4 := model.ClientInfo{
+		MspID:        "org4MSP",
+		CryptoPath:   cryptoPath4,
+		CertPath:     certPath4,
+		KeyPath:      keyPath4,
+		TlsCertPath:  tlsCertPath4,
+		PeerEndpoint: "peer1.org4.ifantasy.net:7551",
+		GatewayPeer:  "peer1.org4.ifantasy.net",
+	}
+	gateway4 := newGateway(clientInfo4)
+	defer gateway4.Close()
+	network4 := gateway4.GetNetwork(channelName)
+	contract.Contract4 = network4.GetContract(chaincodeName)
+	log.Println("peer1.org4.ifantasy.net 连接成功")
+
+	/////////////////////////////clientInfo5
+	cryptoPath5 := "E:/code/orgs/org5.ifantasy.net"
+	certPath5 := path.Join(cryptoPath3, "registers", "user1", "msp", "signcerts", "cert.pem")
+	keyPath5 := path.Join(cryptoPath3, "registers", "user1", "msp", "keystore")
+	tlsCertPath5 := path.Join(cryptoPath3, "assets", "tls-ca-cert.pem")
+	clientInfo5 := model.ClientInfo{
+		MspID:        "org5MSP",
+		CryptoPath:   cryptoPath5,
+		CertPath:     certPath5,
+		KeyPath:      keyPath5,
+		TlsCertPath:  tlsCertPath5,
+		PeerEndpoint: "peer1.org5.ifantasy.net:7651",
+		GatewayPeer:  "peer1.org5.ifantasy.net",
+	}
+	gateway5 := newGateway(clientInfo5)
+	defer gateway5.Close()
+	network5 := gateway5.GetNetwork(channelName)
+	contract.Contract5 = network5.GetContract(chaincodeName)
+	log.Println("peer1.org5.ifantasy.net 连接成功")
 
 	contract.ContractList = append(contract.ContractList, contract.Contract1)
 	contract.ContractList = append(contract.ContractList, contract.Contract2)
 	contract.ContractList = append(contract.ContractList, contract.Contract3)
-
-	log.Println("peer1.hard.ifantasy.net 连接成功")
+	contract.ContractList = append(contract.ContractList, contract.Contract4)
+	contract.ContractList = append(contract.ContractList, contract.Contract5)
 
 	log.Println("启动web服务 :7788")
 	http.HandleFunc("/decideNoRecord", controller.DecideNoRecord)

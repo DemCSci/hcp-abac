@@ -30,7 +30,7 @@ fabric:
   # 用户私钥路径
   #privateKeyPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/priv_sk
   #privateKeyPath: crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
-  privateKeyPath: E:/code/orgs/soft.ifantasy.net/registers/user1/msp/keystore/58ff1379884aedde8758edf1bb2facafa22cfd4e4f621bfefe4580c2a752fb42_sk
+  privateKeyPath: E:/code/orgs/soft.ifantasy.net/registers/user1/msp/keystore/ad3588d4280303e8830102276ca88cc921052ceafba599593dea9295af8ef646_sk
   # 访问的组织名
   mspid: softMSP
   # 用户名
