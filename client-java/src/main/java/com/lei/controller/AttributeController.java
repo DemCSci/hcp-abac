@@ -40,9 +40,10 @@ public class AttributeController {
     @ApiOperation("根据用户id查找该用户的所有属性")
     public JsonData attributes(@RequestParam("user_id") String userId) throws ContractException {
         byte[] attributes = contract.evaluateTransaction("FindAttributeByUserId", userId);
-        if (attributes == null) {
-            return JsonData.buildError("属性为null");
+        if (attributes == null || attributes.length == 0) {
+            return JsonData.buildError("属性为null 或者长度为0");
         }
+
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(attributes, Attribute[].class));
     }
 

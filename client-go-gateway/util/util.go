@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"github.com/redis/go-redis/v9"
 	"strings"
 )
@@ -15,6 +16,7 @@ import "github.com/panjf2000/ants/v2"
 var Pool ants.Pool
 var Rdb *redis.Client
 var Ctx = context.Background()
+var ClientInfoMap = make(map[string]*client.Contract)
 
 func FormatJSON(data []byte) string {
 	var prettyJSON bytes.Buffer

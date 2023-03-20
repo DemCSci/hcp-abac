@@ -1,7 +1,6 @@
 package main
 
 import (
-	"client-go-gateway/contract"
 	"client-go-gateway/controller"
 	"client-go-gateway/model"
 	"client-go-gateway/util"
@@ -48,11 +47,9 @@ func main() {
 	gateway := newGateway(clientInfo1)
 	defer gateway.Close()
 	network := gateway.GetNetwork(channelName)
-
-	contract.Contract1 = network.GetContract(chaincodeName)
+	clientInfo1.Contract = network.GetContract(chaincodeName)
+	clientInfo1.Live = true
 	log.Println("peer1.soft.ifantasy.net 连接成功")
-	//log.Println("getAllSeets from clientInfo1")
-	//getAllAssets(contract)
 
 	/////////////////////////////clientInfo2
 
@@ -72,7 +69,8 @@ func main() {
 	gateway2 := newGateway(clientInfo2)
 	defer gateway2.Close()
 	network2 := gateway2.GetNetwork(channelName)
-	contract.Contract2 = network2.GetContract(chaincodeName)
+	clientInfo2.Contract = network2.GetContract(chaincodeName)
+	clientInfo2.Live = true
 	log.Println("peer1.web.ifantasy.net 连接成功")
 
 	/////////////////////////////clientInfo3
@@ -93,14 +91,15 @@ func main() {
 	gateway3 := newGateway(clientInfo3)
 	defer gateway3.Close()
 	network3 := gateway3.GetNetwork(channelName)
-	contract.Contract3 = network3.GetContract(chaincodeName)
+	clientInfo3.Contract = network3.GetContract(chaincodeName)
+	clientInfo3.Live = true
 	log.Println("peer1.hard.ifantasy.net 连接成功")
 
 	/////////////////////////////clientInfo4
 	cryptoPath4 := "E:/code/orgs/org4.ifantasy.net"
-	certPath4 := path.Join(cryptoPath3, "registers", "user1", "msp", "signcerts", "cert.pem")
-	keyPath4 := path.Join(cryptoPath3, "registers", "user1", "msp", "keystore")
-	tlsCertPath4 := path.Join(cryptoPath3, "assets", "tls-ca-cert.pem")
+	certPath4 := path.Join(cryptoPath4, "registers", "user1", "msp", "signcerts", "cert.pem")
+	keyPath4 := path.Join(cryptoPath4, "registers", "user1", "msp", "keystore")
+	tlsCertPath4 := path.Join(cryptoPath4, "assets", "tls-ca-cert.pem")
 	clientInfo4 := model.ClientInfo{
 		MspID:        "org4MSP",
 		CryptoPath:   cryptoPath4,
@@ -113,14 +112,15 @@ func main() {
 	gateway4 := newGateway(clientInfo4)
 	defer gateway4.Close()
 	network4 := gateway4.GetNetwork(channelName)
-	contract.Contract4 = network4.GetContract(chaincodeName)
+	clientInfo4.Contract = network4.GetContract(chaincodeName)
+	clientInfo4.Live = true
 	log.Println("peer1.org4.ifantasy.net 连接成功")
 
 	/////////////////////////////clientInfo5
 	cryptoPath5 := "E:/code/orgs/org5.ifantasy.net"
-	certPath5 := path.Join(cryptoPath3, "registers", "user1", "msp", "signcerts", "cert.pem")
-	keyPath5 := path.Join(cryptoPath3, "registers", "user1", "msp", "keystore")
-	tlsCertPath5 := path.Join(cryptoPath3, "assets", "tls-ca-cert.pem")
+	certPath5 := path.Join(cryptoPath5, "registers", "user1", "msp", "signcerts", "cert.pem")
+	keyPath5 := path.Join(cryptoPath5, "registers", "user1", "msp", "keystore")
+	tlsCertPath5 := path.Join(cryptoPath5, "assets", "tls-ca-cert.pem")
 	clientInfo5 := model.ClientInfo{
 		MspID:        "org5MSP",
 		CryptoPath:   cryptoPath5,
@@ -133,20 +133,26 @@ func main() {
 	gateway5 := newGateway(clientInfo5)
 	defer gateway5.Close()
 	network5 := gateway5.GetNetwork(channelName)
-	contract.Contract5 = network5.GetContract(chaincodeName)
+	clientInfo5.Contract = network5.GetContract(chaincodeName)
+	clientInfo5.Live = true
 	log.Println("peer1.org5.ifantasy.net 连接成功")
 
-	contract.ContractList = append(contract.ContractList, contract.Contract1)
-	contract.ContractList = append(contract.ContractList, contract.Contract2)
-	contract.ContractList = append(contract.ContractList, contract.Contract3)
-	contract.ContractList = append(contract.ContractList, contract.Contract4)
-	contract.ContractList = append(contract.ContractList, contract.Contract5)
+	//填到到map中去
+	util.ClientInfoMap[clientInfo1.MspID] = clientInfo1.Contract
+	util.ClientInfoMap[clientInfo2.MspID] = clientInfo2.Contract
+	util.ClientInfoMap[clientInfo3.MspID] = clientInfo3.Contract
+	util.ClientInfoMap[clientInfo4.MspID] = clientInfo4.Contract
+	util.ClientInfoMap[clientInfo5.MspID] = clientInfo5.Contract
 
 	log.Println("启动web服务 :7788")
 	http.HandleFunc("/decideNoRecord", controller.DecideNoRecord)
+	http.HandleFunc("/decideNoRecordPool", controller.DecideNoRecordPool)
+	http.HandleFunc("/decideNoRecordRedis", controller.DecideNoRecordRedis)
 	http.HandleFunc("/decideWithRecord", controller.DecideWithRecord)
+
 	http.HandleFunc("/users", controller.GetAllUsers)
 	http.HandleFunc("/addUser", controller.AddUser)
+	http.HandleFunc("/addAllUser", controller.AddAllUser)
 	http.HandleFunc("/my", controller.GetSubmittingClientIdentity)
 
 	err := http.ListenAndServe(":7788", nil)
