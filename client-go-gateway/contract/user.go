@@ -11,12 +11,10 @@ type User struct {
 	Money float64 `json:"money"`
 }
 
-func GetAllUsers(contract *client.Contract) string {
+func GetAllUsers(contract *client.Contract) (string, error) {
 	result, err := contract.EvaluateTransaction("GetAllUsers")
-	if err != nil {
-		log.Fatalf("调用GetAllUsers合约失败：%v\n", err)
-	}
-	return string(result)
+
+	return string(result), err
 }
 
 func AddUser(contract *client.Contract) string {

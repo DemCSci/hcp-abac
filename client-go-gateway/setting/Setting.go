@@ -3,8 +3,12 @@ package setting
 import (
 	"bytes"
 	"client-go-gateway/constants"
+	"client-go-gateway/utils"
 	"fmt"
+	"github.com/hyperledger/fabric-gateway/pkg/client"
+	"github.com/panjf2000/ants/v2"
 	"gopkg.in/ini.v1"
+	"log"
 	"strconv"
 	"time"
 
@@ -15,15 +19,17 @@ import (
 )
 
 var (
-	cfg            *ini.File
-	WebSetting     = &WebConfig{}
-	logOutSetting  = &LogOutputConfig{}
-	MyLogger       = &logrus.Logger{}
-	MetadataLogger *logrus.Logger
-
+	cfg              *ini.File
+	WebSetting       = &WebConfig{}
+	logOutSetting    = &LogOutputConfig{}
+	MyLogger         = &logrus.Logger{}
+	MetadataLogger   *logrus.Logger
+	GoroutinePool    *ants.Pool
 	redisConfig      = &RedisConfig{}
 	RedisClient      *redis.Client
 	RateLimitSetting = &RateLimitConfig{}
+	ClientInfoMap    = make(map[string]*client.Contract)
+	GlobalConsistent = utils.NewConsistent()
 )
 
 func Setup() {
@@ -42,10 +48,17 @@ func Setup() {
 	mapToConfig("rate", RateLimitSetting)
 
 	setupLogOutput()
+	setupGoroutinePool()
+	setupRedis()
+}
 
-	//setupMySQL()
+func setupGoroutinePool() {
 
-	//setupRedis()
+	pool, err := ants.NewPool(3, ants.WithNonblocking(false))
+	if err != nil {
+		log.Fatal("goroutine 池子创建失败")
+	}
+	GoroutinePool = pool
 }
 
 func mapToConfig(section string, value interface{}) {
@@ -123,14 +136,6 @@ func initLog(path string, filename string) *logrus.Logger {
 	log.Level = logrus.InfoLevel
 
 	return log
-}
-
-type MySQLConfig struct {
-	IP       string
-	Port     int
-	User     string
-	Password string
-	Database string
 }
 
 type RedisConfig struct {

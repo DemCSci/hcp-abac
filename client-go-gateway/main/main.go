@@ -1,14 +1,12 @@
 package main
 
 import (
-	"client-go-gateway/controller"
 	"client-go-gateway/model"
-	"client-go-gateway/util"
-	"github.com/panjf2000/ants/v2"
-	"github.com/redis/go-redis/v9"
+	"client-go-gateway/routers"
+	"client-go-gateway/setting"
 	"log"
-	"net/http"
 	"path"
+	"strconv"
 )
 
 const (
@@ -17,18 +15,6 @@ const (
 )
 
 func main() {
-	pool, err2 := ants.NewPool(3, ants.WithNonblocking(false))
-
-	if err2 != nil {
-		log.Fatal("goroutine 池子创建失败")
-	}
-	util.Pool = pool
-
-	util.Rdb = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
 
 	cryptoPath1 := "E:/code/orgs/soft.ifantasy.net"
 	certPath1 := path.Join(cryptoPath1, "registers", "user1", "msp", "signcerts", "cert.pem")
@@ -139,32 +125,24 @@ func main() {
 	log.Println("peer1.org5.ifantasy.net 连接成功")
 
 	//填到到map中去
-	util.ClientInfoMap[clientInfo1.MspID] = clientInfo1.Contract
-	util.ClientInfoMap[clientInfo2.MspID] = clientInfo2.Contract
-	util.ClientInfoMap[clientInfo3.MspID] = clientInfo3.Contract
-	util.ClientInfoMap[clientInfo4.MspID] = clientInfo4.Contract
-	util.ClientInfoMap[clientInfo5.MspID] = clientInfo5.Contract
+	setting.ClientInfoMap[clientInfo1.MspID] = clientInfo1.Contract
+	setting.ClientInfoMap[clientInfo2.MspID] = clientInfo2.Contract
+	setting.ClientInfoMap[clientInfo3.MspID] = clientInfo3.Contract
+	setting.ClientInfoMap[clientInfo4.MspID] = clientInfo4.Contract
+	setting.ClientInfoMap[clientInfo5.MspID] = clientInfo5.Contract
 
-	util.GlobalConsistent.Add(clientInfo1.MspID)
-	util.GlobalConsistent.Add(clientInfo2.MspID)
-	util.GlobalConsistent.Add(clientInfo3.MspID)
-	util.GlobalConsistent.Add(clientInfo4.MspID)
-	util.GlobalConsistent.Add(clientInfo5.MspID)
+	setting.GlobalConsistent.Add(clientInfo1.MspID)
+	setting.GlobalConsistent.Add(clientInfo2.MspID)
+	setting.GlobalConsistent.Add(clientInfo3.MspID)
+	setting.GlobalConsistent.Add(clientInfo4.MspID)
+	setting.GlobalConsistent.Add(clientInfo5.MspID)
 
-	log.Println("启动web服务 :7788")
-	http.HandleFunc("/decideNoRecord", controller.DecideNoRecord)
-	http.HandleFunc("/decideNoRecordPool", controller.DecideNoRecordPool)
-	http.HandleFunc("/DecideHashNoRecordPool", controller.DecideHashNoRecordPool)
-	http.HandleFunc("/decideNoRecordRedis", controller.DecideNoRecordRedis)
-	http.HandleFunc("/decideWithRecord", controller.DecideWithRecord)
+	setting.Setup()
 
-	http.HandleFunc("/users", controller.GetAllUsers)
-	http.HandleFunc("/addUser", controller.AddUser)
-	http.HandleFunc("/addAllUser", controller.AddAllUser)
-	http.HandleFunc("/my", controller.GetSubmittingClientIdentity)
-
-	err := http.ListenAndServe(":7788", nil)
+	router := routers.InitRouter(setting.WebSetting.ContextPath)
+	err := router.Run(":" + strconv.Itoa(setting.WebSetting.Port))
 	if err != nil {
-		log.Fatalln(err)
+		setting.MyLogger.Info("启动失败，err=", err)
+		return
 	}
 }
