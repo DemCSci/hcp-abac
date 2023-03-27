@@ -17,11 +17,12 @@ const (
 )
 
 func main() {
-	pool, err2 := ants.NewPool(6)
+	pool, err2 := ants.NewPool(3, ants.WithNonblocking(false))
+
 	if err2 != nil {
 		log.Fatal("goroutine 池子创建失败")
 	}
-	util.Pool = *pool
+	util.Pool = pool
 
 	util.Rdb = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -144,9 +145,16 @@ func main() {
 	util.ClientInfoMap[clientInfo4.MspID] = clientInfo4.Contract
 	util.ClientInfoMap[clientInfo5.MspID] = clientInfo5.Contract
 
+	util.GlobalConsistent.Add(clientInfo1.MspID)
+	util.GlobalConsistent.Add(clientInfo2.MspID)
+	util.GlobalConsistent.Add(clientInfo3.MspID)
+	util.GlobalConsistent.Add(clientInfo4.MspID)
+	util.GlobalConsistent.Add(clientInfo5.MspID)
+
 	log.Println("启动web服务 :7788")
 	http.HandleFunc("/decideNoRecord", controller.DecideNoRecord)
 	http.HandleFunc("/decideNoRecordPool", controller.DecideNoRecordPool)
+	http.HandleFunc("/DecideHashNoRecordPool", controller.DecideHashNoRecordPool)
 	http.HandleFunc("/decideNoRecordRedis", controller.DecideNoRecordRedis)
 	http.HandleFunc("/decideWithRecord", controller.DecideWithRecord)
 

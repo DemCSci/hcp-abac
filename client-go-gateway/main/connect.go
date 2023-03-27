@@ -18,7 +18,6 @@ import (
 func newGrpcConnection(info model.ClientInfo) *grpc.ClientConn {
 
 	// client 用户的 tls 通信证书
-
 	certificate, err := loadCertificate(info.TlsCertPath)
 	if err != nil {
 		panic(err)
@@ -100,9 +99,9 @@ func newGateway(clintInfo model.ClientInfo) *client.Gateway {
 		id,
 		client.WithSign(sign),
 		client.WithClientConnection(clientConnection1),
-		client.WithEvaluateTimeout(5*time.Second),
+		client.WithEvaluateTimeout(15*time.Second),
 		client.WithEndorseTimeout(15*time.Second),
-		client.WithSubmitTimeout(5*time.Second),
+		client.WithSubmitTimeout(15*time.Second),
 		client.WithCommitStatusTimeout(1*time.Minute),
 	)
 	if err != nil {

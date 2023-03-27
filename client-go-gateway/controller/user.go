@@ -37,7 +37,6 @@ func AddAllUser(w http.ResponseWriter, request *http.Request) {
 	for _, val := range util.ClientInfoMap {
 		contract.AddUser(val)
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, "注册全部用户身份成功")
 }

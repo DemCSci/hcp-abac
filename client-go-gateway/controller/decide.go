@@ -6,6 +6,7 @@ import (
 	"client-go-gateway/request"
 	"client-go-gateway/util"
 	"encoding/json"
+	"github.com/google/uuid"
 	"io"
 	"io/ioutil"
 	"log"
@@ -80,10 +81,14 @@ func DecideNoRecordPool(w http.ResponseWriter, r *http.Request) {
 		ResourceId:  request.RequesterId,
 		Response:    contractResponse1,
 	}
-	util.Pool.Submit(func() {
+	err = util.Pool.Submit(func() {
 		contract.CreateRecord(util.ClientInfoMap["softMSP"], *record)
 		time.Sleep(time.Second * 1)
 	})
+	if err != nil {
+		log.Println(err)
+		io.WriteString(w, "放入池子错误")
+	}
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, contractResponse1)
 }
@@ -146,4 +151,47 @@ func DecideWithRecord(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, record)
+}
+
+/**
+使用一致性hash，负载均衡请求节点
+*/
+func DecideHashNoRecordPool(w http.ResponseWriter, r *http.Request) {
+	bodyByte, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("读取body内容失败")
+	}
+	var request request.DecideRequest
+	err = json.Unmarshal(bodyByte, &request)
+	if err != nil {
+		log.Fatal("反序列化失败")
+	}
+	ger, err := util.GlobalConsistent.Ger(uuid.New().String())
+	//log.Printf("本地请求映射到：%s\n", ger)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, "一致性hash内部错误")
+		return
+	}
+	contractResponse1 := contract.DecideNoRecord(util.ClientInfoMap[ger], request)
+	//contractResponse1 := contract.DecideNoRecord(util.ClientInfoMap["softMSP"], request)
+
+	//异步发送record
+	record := &model.Record{
+		Id:          "record:" + request.ResourceId + ":" + request.RequesterId + ":" + util.GetUUID(),
+		RequesterId: request.RequesterId,
+		ResourceId:  request.RequesterId,
+		Response:    contractResponse1,
+	}
+	err = util.Pool.Submit(func() {
+		//contract.CreateRecord(util.ClientInfoMap["webMSP"], *record)
+		contract.CreateRecord(util.ClientInfoMap[ger], *record)
+		time.Sleep(time.Millisecond * 500)
+	})
+	if err != nil {
+		log.Println(err)
+		io.WriteString(w, "放入池子错误")
+	}
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, contractResponse1)
 }

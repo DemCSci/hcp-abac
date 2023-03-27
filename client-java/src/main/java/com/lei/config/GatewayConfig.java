@@ -1,7 +1,9 @@
 package com.lei.config;
 
+import ch.qos.logback.core.util.FileUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.file.PathUtils;
 import org.hyperledger.fabric.gateway.*;
 import org.hyperledger.fabric.sdk.Channel;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.stream.Stream;
 
 /**
  *
@@ -124,7 +127,9 @@ public class GatewayConfig {
 
 
     private static PrivateKey getPrivateKey(final Path privateKeyPath) throws IOException, InvalidKeyException {
-        try (Reader privateKeyReader = Files.newBufferedReader(privateKeyPath, StandardCharsets.UTF_8)) {
+        Stream<Path> list = Files.list(privateKeyPath);
+        Path path = list.findFirst().get();
+        try (Reader privateKeyReader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             return Identities.readPrivateKey(privateKeyReader);
         }
     }
