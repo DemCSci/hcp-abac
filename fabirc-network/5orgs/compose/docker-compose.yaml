@@ -1,4 +1,4 @@
-version: '2'
+version: "3"
 
 networks:
   network:
@@ -103,6 +103,10 @@ services:
       - ${LOCAL_CA_PATH}/soft.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7251:7251
+    cpu_count: 1
+    cpu_period: 100000
+    cpu_quota: 50000
+    cpuset: 0,0
       
   peer1.web.ifantasy.net:
     container_name: peer1.web.ifantasy.net
@@ -119,7 +123,10 @@ services:
       - ${LOCAL_CA_PATH}/web.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7351:7351
-
+    cpu_count: 1
+    cpu_period: 100000
+    cpu_quota: 50000
+    cpuset: 1,1
   peer1.hard.ifantasy.net:
     container_name: peer1.hard.ifantasy.net
     extends:
@@ -135,6 +142,10 @@ services:
       - ${LOCAL_CA_PATH}/hard.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7451:7451
+    cpu_count: 1
+    cpu_period: 100000
+    cpu_quota: 50000
+    cpuset: 2,2      
   peer1.org4.ifantasy.net:
     container_name: peer1.org4.ifantasy.net
     extends:
@@ -144,13 +155,16 @@ services:
       - CORE_PEER_ID=peer1.org4.ifantasy.net
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7551
       - CORE_PEER_ADDRESS=peer1.org4.ifantasy.net:7551
-      - CORE_PEER_LOCALMSPID=hardMSP
+      - CORE_PEER_LOCALMSPID=org4MSP
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org4.ifantasy.net:7551
     volumes:
       - ${LOCAL_CA_PATH}/org4.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7551:7551
-
+    cpu_count: 1
+    cpu_period: 100000
+    cpu_quota: 50000
+    cpuset: 3,3   
   peer1.org5.ifantasy.net:
     container_name: peer1.org5.ifantasy.net
     extends:
@@ -160,7 +174,7 @@ services:
       - CORE_PEER_ID=peer1.org5.ifantasy.net
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7651
       - CORE_PEER_ADDRESS=peer1.org5.ifantasy.net:7651
-      - CORE_PEER_LOCALMSPID=hardMSP
+      - CORE_PEER_LOCALMSPID=org5MSP
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org5.ifantasy.net:7651
     volumes:
       - ${LOCAL_CA_PATH}/org5.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer

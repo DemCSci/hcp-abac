@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 # 部署链码
 
-CHAINCODE_VERSION=11.0
-CHAINCODE_SEQUENCE=11
+export CHAINCODE_VERSION=1.0
+export CHAINCODE_SEQUENCE=1
 
 #安装链码
 source envpeer1soft
@@ -25,7 +25,7 @@ source envpeer1org5
 peer lifecycle chaincode install basic.tar.gz
 peer lifecycle chaincode queryinstalled
 
-ID=`peer lifecycle chaincode calculatepackageid basic.tar.gz`
+export ID=`peer lifecycle chaincode calculatepackageid basic.tar.gz`
 #export CHAINCODE_ID=basic_1:0f1f1ffc8e3865a9179e70a3c56237482b3eb4dcecd30ab51ab01a6f5d3daeff
 export CHAINCODE_ID=$ID
 #批准链码

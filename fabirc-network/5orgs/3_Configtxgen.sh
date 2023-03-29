@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-docker-compose -f $LOCAL_ROOT_PATH/compose/docker-compose.yaml up -d peer1.soft.ifantasy.net peer1.web.ifantasy.net peer1.hard.ifantasy.net peer1.org4.ifantasy.net peer1.org5.ifantasy.net
+docker-compose --compatibility -f $LOCAL_ROOT_PATH/compose/docker-compose.yaml up -d peer1.soft.ifantasy.net peer1.web.ifantasy.net peer1.hard.ifantasy.net peer1.org4.ifantasy.net peer1.org5.ifantasy.net
 docker-compose -f $LOCAL_ROOT_PATH/compose/docker-compose.yaml up -d orderer1.council.ifantasy.net orderer2.council.ifantasy.net orderer3.council.ifantasy.net orderer4.council.ifantasy.net orderer5.council.ifantasy.net
 sleep 5
 
@@ -45,6 +45,7 @@ peer channel list
 source envpeer1hard
 peer channel join -b $LOCAL_CA_PATH/hard.ifantasy.net/assets/testchannel.block
 peer channel list
+
 source envpeer1org4
 peer channel join -b $LOCAL_CA_PATH/org4.ifantasy.net/assets/testchannel.block
 peer channel list

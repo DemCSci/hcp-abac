@@ -1,4 +1,5 @@
 #!/bin/bash -eu
+set -e
 echo "Preparation============================="
 mkdir -p $LOCAL_CA_PATH/council.ifantasy.net/assets
 cp $LOCAL_CA_PATH/council.ifantasy.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/council.ifantasy.net/assets/ca-cert.pem

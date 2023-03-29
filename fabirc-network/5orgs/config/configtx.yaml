@@ -95,8 +95,6 @@ Organizations:
         AnchorPeers:
             - Host: peer1.hard.ifantasy.net
               Port: 7451
-
-
     - &org4
         Name: org4MSP
         ID: org4MSP
@@ -186,10 +184,10 @@ Orderer: &OrdererDefaults
     OrdererType: etcdraft
     Addresses:
         - orderer1.council.ifantasy.net:7051
-        - orderer2.council.ifantasy.net:7052
-        - orderer3.council.ifantasy.net:7053
-        - orderer4.council.ifantasy.net:7054
-        - orderer5.council.ifantasy.net:7055        
+        - orderer2.council.ifantasy.net:7054
+        - orderer3.council.ifantasy.net:7057
+        - orderer4.council.ifantasy.net:7060
+        - orderer5.council.ifantasy.net:7063        
     # 定义了EtcdRaft排序类型被选择时的配置
     EtcdRaft:
         Consenters:
@@ -219,7 +217,7 @@ Orderer: &OrdererDefaults
     # 区块打包的最大包含交易数（orderer端切分区块的参数）
     BatchSize:
         # 一个区块里最大的交易数
-        MaxMessageCount: 10
+        MaxMessageCount: 100
         # 一个区块的最大字节数，任何时候都不能超过
         AbsoluteMaxBytes: 99 MB
         # 一个区块的建议字节数，如果一个交易消息的大小超过了这个值, 就会被放入另外一个更大的区块中
@@ -292,6 +290,7 @@ Profiles:
                 - *web
                 - *hard
                 - *org4
-                - *org5                
+                - *org5
+              
             Capabilities:
                 <<: *ApplicationCapabilities

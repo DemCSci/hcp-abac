@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
   ca-base:
@@ -29,6 +29,7 @@ services:
       - /var/run:/host/var/run
     networks:
       - ${DOCKER_NETWORKS}
+
 
   orderer-base:
     image: hyperledger/fabric-orderer:${FABRIC_BASE_VERSION}

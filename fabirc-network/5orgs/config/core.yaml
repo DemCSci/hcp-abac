@@ -462,6 +462,7 @@ peer:
             endorserService: 2500
             # deliverService limits concurrent event listeners registered to deliver service for blocks and transaction events.
             deliverService: 2500
+            gatewayService: 2500
 
 ###############################################################################
 #

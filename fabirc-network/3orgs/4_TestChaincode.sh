@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 # 部署链码
 
-CHAINCODE_VERSION=11.0
-CHAINCODE_SEQUENCE=11
+CHAINCODE_VERSION=1.0
+CHAINCODE_SEQUENCE=1
 
 #安装链码
 source envpeer1soft
