@@ -1,9 +1,6 @@
 package com.lei.controller.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author lei
@@ -14,6 +11,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AddResourceControllerRequest {
     private String resourceId;
     private String controllerId;

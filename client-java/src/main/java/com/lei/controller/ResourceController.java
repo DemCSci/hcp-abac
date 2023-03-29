@@ -53,7 +53,7 @@ public class ResourceController {
     }
 
     @GetMapping("/all")
-    public JsonData createResource() throws ContractException, InterruptedException, TimeoutException {
+    public JsonData findAllResource() throws ContractException, InterruptedException, TimeoutException {
 
         byte[] result = contract.evaluateTransaction("GetAllResource");
 
@@ -73,7 +73,7 @@ public class ResourceController {
     }
 
     @GetMapping("/find")
-    public JsonData createResource(@RequestParam("id")String resourceId) throws ContractException, InterruptedException, TimeoutException {
+    public JsonData findResource(@RequestParam("id")String resourceId) throws ContractException {
 
         byte[] result = contract.evaluateTransaction("FindResourceById");
 

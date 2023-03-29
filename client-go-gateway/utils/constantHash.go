@@ -29,14 +29,17 @@ func (x units) Swap(i, j int) {
 //当hash环没有数据时，提示错误
 var emptyErr = errors.New("hash 环为空")
 
-//创建结构体，保存一致性hash信息
+// Consistent 创建结构体，保存一致性hash信息
 type Consistent struct {
 	//hash环，key为hash值，值存放的是节点信息
 	circle map[uint32]string
 	//已经排序的节点hash切片
 	sortedHashes units
-	//虚拟节点个数，用来增加hash的平衡性
-	virtualNode int
+
+	//虚拟节点起始
+	virtualNodeStart map[string]int
+	//虚拟节点结尾 不包括
+	virtualNodeEnd map[string]int
 	//读写锁
 	sync.RWMutex
 }
@@ -44,9 +47,9 @@ type Consistent struct {
 func NewConsistent() *Consistent {
 	return &Consistent{
 		//初始化变量
-		circle: make(map[uint32]string),
-		//设置虚拟节点个数
-		virtualNode: 20,
+		circle:           make(map[uint32]string),
+		virtualNodeStart: make(map[string]int),
+		virtualNodeEnd:   make(map[string]int),
 	}
 }
 
@@ -73,11 +76,6 @@ func (c *Consistent) hashKey(key string) uint32 {
 func (c *Consistent) updateSortedHashes() {
 	hash := c.sortedHashes[:0]
 
-	//判断切片容量是否过大，如果过大则重置
-	if cap(c.sortedHashes)/(c.virtualNode*4) > len(c.circle) {
-		hash = nil
-	}
-
 	//添加hash
 	for k := range c.circle {
 		hash = append(hash, k)
@@ -89,14 +87,14 @@ func (c *Consistent) updateSortedHashes() {
 	c.sortedHashes = hash
 }
 
-//向hash环添加节点
+//向hash环添加节点 默认每个元素添加20个
 func (c *Consistent) Add(element string) {
 	c.Lock()
 	defer c.Unlock()
-	c.add(element)
+	c.AddNumber(element, 20)
 }
 
-func (c *Consistent) add(element string) {
+func (c *Consistent) AddNumber(element string, number int) {
 	//生成虚拟节点
 	var (
 		i    int
@@ -105,12 +103,14 @@ func (c *Consistent) add(element string) {
 	)
 
 	//循环虚拟节点，设置副本
-	for i = 0; i < c.virtualNode; i++ {
+	start := c.virtualNodeEnd[element]
+	end := start + number
+	for i = start; i < end; i++ {
 		key = c.generateKey(element, i)
 		hash = c.hashKey(key)
 		c.circle[hash] = element
 	}
-
+	c.virtualNodeEnd[element] = end
 	//更新排序
 	c.updateSortedHashes()
 }
@@ -122,14 +122,40 @@ func (c *Consistent) remove(element string) {
 		hash uint32
 		key  string
 	)
-
-	//循环虚拟节点，设置副本
-	for i = 0; i < c.virtualNode; i++ {
+	start := c.virtualNodeStart[element]
+	end := c.virtualNodeEnd[element]
+	//循环虚拟节点，删除副本
+	for i = start; i < end; i++ {
 		key = c.generateKey(element, i)
 		hash = c.hashKey(key)
 		delete(c.circle, hash)
 	}
+	c.virtualNodeStart[element] = end
+	//更新排序
+	c.updateSortedHashes()
+}
 
+//减少虚拟节点数量
+func (c *Consistent) SubtractNumber(element string, number int) {
+	//生成虚拟节点
+	var (
+		i    int
+		hash uint32
+		key  string
+	)
+	size := c.virtualNodeEnd[element] - c.virtualNodeStart[element]
+	if number > size {
+		number = size
+	}
+	start := c.virtualNodeStart[element]
+	end := start + number
+	//循环虚拟节点，设置副本
+	for i = start; i < end; i++ {
+		key = c.generateKey(element, i)
+		hash = c.hashKey(key)
+		delete(c.circle, hash)
+	}
+	c.virtualNodeStart[element] = end
 	//更新排序
 	c.updateSortedHashes()
 }
@@ -169,4 +195,11 @@ func (c *Consistent) Ger(name string) (string, error) {
 	i := c.search(key)
 
 	return c.circle[c.sortedHashes[i]], nil
+}
+
+func (c *Consistent) GetVirtualNodeNumber(element string) int {
+	c.Lock()
+	defer c.Unlock()
+
+	return c.virtualNodeEnd[element] - c.virtualNodeStart[element]
 }

@@ -125,11 +125,11 @@ func main() {
 	log.Println("peer1.org5.ifantasy.net 连接成功")
 
 	//填到到map中去
-	setting.ClientInfoMap[clientInfo1.MspID] = clientInfo1.Contract
-	setting.ClientInfoMap[clientInfo2.MspID] = clientInfo2.Contract
-	setting.ClientInfoMap[clientInfo3.MspID] = clientInfo3.Contract
-	setting.ClientInfoMap[clientInfo4.MspID] = clientInfo4.Contract
-	setting.ClientInfoMap[clientInfo5.MspID] = clientInfo5.Contract
+	setting.ClientInfoMap[clientInfo1.MspID] = &clientInfo1
+	setting.ClientInfoMap[clientInfo2.MspID] = &clientInfo2
+	setting.ClientInfoMap[clientInfo3.MspID] = &clientInfo3
+	setting.ClientInfoMap[clientInfo4.MspID] = &clientInfo4
+	setting.ClientInfoMap[clientInfo5.MspID] = &clientInfo5
 
 	setting.GlobalConsistent.Add(clientInfo1.MspID)
 	setting.GlobalConsistent.Add(clientInfo2.MspID)

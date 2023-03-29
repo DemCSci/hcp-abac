@@ -3,9 +3,9 @@ package setting
 import (
 	"bytes"
 	"client-go-gateway/constants"
+	"client-go-gateway/model"
 	"client-go-gateway/utils"
 	"fmt"
-	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"github.com/panjf2000/ants/v2"
 	"gopkg.in/ini.v1"
 	"log"
@@ -28,7 +28,7 @@ var (
 	redisConfig      = &RedisConfig{}
 	RedisClient      *redis.Client
 	RateLimitSetting = &RateLimitConfig{}
-	ClientInfoMap    = make(map[string]*client.Contract)
+	ClientInfoMap    = make(map[string]*model.ClientInfo)
 	GlobalConsistent = utils.NewConsistent()
 )
 
