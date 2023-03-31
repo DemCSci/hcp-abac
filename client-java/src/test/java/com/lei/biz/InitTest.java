@@ -70,12 +70,13 @@ public class InitTest {
         publishPrivateAttribute(resourceId);
 
         JsonData jsonData = attributeController.find(resourceId);
-        Attribute attribute = jsonData.getData(new TypeReference<Attribute>() {
+        List<Attribute> dataData = jsonData.getData(new TypeReference<List<Attribute>>() {
         });
+        Attribute attribute = dataData.get(0);
         String attributeId = attribute.getId();
         addPrivateAttribute(attributeId);
 
-        addResourceControllers();
+        addResourceControllers(resourceId);
         System.out.println("============================over=====================");
 
     }
@@ -154,9 +155,11 @@ public class InitTest {
     }
 
     @Test
-    public void addResourceControllers() throws ContractException, InterruptedException, TimeoutException {
+    public void addResourceControllers(@Autowired(required = false) String resourceId) throws ContractException, InterruptedException, TimeoutException {
 
-
+        if (StringUtils.isBlank(resourceId)) {
+            resourceId = "resource:e4c5c522-924b-458b-b417-951ef1ff0ddf";
+        }
         //查询所有用户身份
         JsonData all = userController.all();
         List<Map> data = all.getData(new TypeReference<List<Map>>() {
@@ -165,7 +168,7 @@ public class InitTest {
             String userid = (String) data.get(i).get("id");
             //需要更改resourceId 和 ownerId
             AddResourceControllerRequest request = AddResourceControllerRequest.builder()
-                    .resourceId("resource:80a9ae48-e28b-4541-8400-fd8115212db9")
+                    .resourceId(resourceId)
                     .controllerId(userid)
                     .build();
             JsonData jsonData = resourceController.addController(request);

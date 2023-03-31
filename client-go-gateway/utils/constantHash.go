@@ -8,6 +8,8 @@ import (
 	"sync"
 )
 
+var DynamicHashEnable = false
+
 //声明切片类型
 type units []uint32
 

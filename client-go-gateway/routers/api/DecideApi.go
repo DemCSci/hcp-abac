@@ -244,3 +244,51 @@ func (decideApi *DecideApi) DecideHashNoRecordRedis(ctx *gin.Context) {
 
 	decideApi.respUtil.SuccessResp(contractResponse1, ctx)
 }
+
+/**
+使用一致性hash，负载均衡请求节点 redis方法
+一开始请求单个节点，一旦发现返回的延迟高于阈值，就进行负载均衡
+*/
+func (decideApi *DecideApi) DecideDynamicHashNoRecordRedis(ctx *gin.Context) {
+	var decideRequest request.DecideRequest
+	err := ctx.BindJSON(&decideRequest)
+	if err != nil {
+		setting.MyLogger.Info("传入信息错误,err =", err)
+		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
+		return
+	}
+	var contractResponse1 string
+	if utils.DynamicHashEnable {
+		ger, err := setting.GlobalConsistent.Ger(uuid.New())
+		if err != nil {
+			setting.MyLogger.Info("一致性hash内部错误,err =", err)
+			decideApi.respUtil.ErrorResp(502, "一致性hash内部错误", ctx)
+			return
+		}
+		contractResponse1, err = contract.DecideNoRecord(setting.ClientInfoMap[ger].Contract, decideRequest)
+	} else {
+		before := time.Now()
+		contractResponse1, err = contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+		if err != nil {
+			decideApi.respUtil.ErrorResp(403, err.Error(), ctx)
+		}
+		after := time.Now()
+		if after.Sub(before).Milliseconds() > 60 {
+			utils.DynamicHashEnable = true
+		}
+	}
+
+	//log.Printf("本地请求映射到：%s\n", ger)
+
+	//异步发送record
+	record := &model.Record{
+		Id:          "record:" + decideRequest.ResourceId + ":" + decideRequest.RequesterId + ":" + uuid.New(),
+		RequesterId: decideRequest.RequesterId,
+		ResourceId:  decideRequest.RequesterId,
+		Response:    contractResponse1,
+	}
+
+	setting.RedisClient.Publish("test-channel", record)
+
+	decideApi.respUtil.SuccessResp(contractResponse1, ctx)
+}

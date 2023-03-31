@@ -40,6 +40,7 @@ func InitRouter(contextPath string) *gin.Engine {
 
 		decide.POST("/DecideHashNoRecordPool", decideApi.DecideHashNoRecordPool)
 		decide.POST("/DecideHashNoRecordRedis", decideApi.DecideHashNoRecordRedis)
+		decide.POST("/DecideDynamicHashNoRecordRedis", decideApi.DecideDynamicHashNoRecordRedis)
 	}
 
 	return router
