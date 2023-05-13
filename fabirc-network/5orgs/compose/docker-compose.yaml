@@ -180,6 +180,10 @@ services:
       - ${LOCAL_CA_PATH}/org5.ifantasy.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7651:7651
+    cpu_count: 1
+    cpu_period: 100000
+    cpu_quota: 50000
+    cpuset: 3,3       
 
   orderer1.council.ifantasy.net:
     container_name: orderer1.council.ifantasy.net

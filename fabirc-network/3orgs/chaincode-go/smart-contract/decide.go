@@ -56,19 +56,15 @@ func (s *SmartContract) DecideNoRecord(ctx contractapi.TransactionContextInterfa
 		log.Printf("controllerId: %v", controllerId)
 		log.Printf("currentId: %v", controllers[i])
 		if controllers[i] == controllerId {
+			log.Printf("当前资源控制器身份验证通过")
 			break
 		}
 		i++
 	}
 	if i == len(controllers) {
+		log.Printf("i=%v\n", i)
 		return "false", fmt.Errorf("资源控制器身份验证不通过")
 	}
-	//验证请求者身份
-
-	//requesterId, err := s.FindUserById(ctx, decideRequest.RequesterId)
-	//if err != nil {
-	//	return "false", err
-	//}
 
 	attributeMap := make(map[string]interface{})
 	//获取主体的公有属性
