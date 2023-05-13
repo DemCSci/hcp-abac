@@ -1,5 +1,6 @@
 package com.lei.controller;
 
+import com.lei.model.Record;
 import com.lei.model.User;
 import com.lei.request.DecideRequest;
 import com.lei.util.JsonData;
@@ -57,6 +58,16 @@ public class DecideController {
                 .resourceId(decideRequest.getResourceId())
                 .build();
         byte[] result = transaction.submit(JsonUtil.obj2Json(request));
+
+        return JsonData.buildSuccess(new String(result));
+    }
+
+    @PostMapping
+    public JsonData createRecord(@RequestBody Record record) throws ContractException, InterruptedException, TimeoutException {
+        Transaction transaction = contract.createTransaction("CreateRecord")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+
+        byte[] result = transaction.submit(JsonUtil.obj2Json(record));
 
         return JsonData.buildSuccess(new String(result));
     }
