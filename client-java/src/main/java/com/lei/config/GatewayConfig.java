@@ -116,6 +116,7 @@ public class GatewayConfig {
     @Bean
     public Channel channel(Network network) {
         Channel channel = network.getChannel();
+
         return channel;
     }
 
