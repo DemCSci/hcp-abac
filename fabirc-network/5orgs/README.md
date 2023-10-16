@@ -1,5 +1,5 @@
 ### 本文工作
-以无排序组织的方式启动 Hyperledger Fabric 网络，其中包含四个组织—— council 、 soft 、 web 、 hard 、org4、org5， council 组织为网络提供 TLS-CA 服务，并且运行维护着5个 orderer 服务；其余每个组织都运行维护着一个 peer 节点。
+以无排序组织的方式启动 Hyperledger Fabric 网络，其中包含五个组织—— council 、 soft(org1) 、 web(org2) 、 hard(org3) 、org4、org5， council 组织为网络提供 TLS-CA 服务，并且运行维护着5个 orderer 服务；其余每个组织都运行维护着一个 peer 节点。
 
 |               项                | 运行端口 |                           说明                           |
 | :-----------------------------: | :------: | :------------------------------------------------------: |
