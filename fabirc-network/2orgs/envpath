@@ -1,1 +1,1 @@
-export PATH=/home/lei/fabric/FabricLearn/bin/2.4.8/bin:/home/lei/fabric/FabricLearn:$PATH
+export PATH=$PWD/../2.4.8/bin:$PWD/../:$PATH

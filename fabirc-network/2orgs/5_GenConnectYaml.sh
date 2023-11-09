@@ -15,4 +15,4 @@ sed -e "s/\${ORG}/$ORG/" \
         -e "s/\${CAPORT}/$CAPORT/" \
         -e "s#\${PEERPEM}#$PP#" \
         -e "s#\${CAPEM}#$CP#" \
-        config/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'  > connection-soft.yaml
+        config/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'  > orgs/soft.ifantasy.net/connection-soft.yaml

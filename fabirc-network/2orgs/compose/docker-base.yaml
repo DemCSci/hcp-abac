@@ -24,6 +24,7 @@ services:
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_LIMITS_CONCURRENCY_GATEWAYSERVICE=2500 
     working_dir: ${DOCKER_CA_PATH}/peer
     volumes:
       - /var/run:/host/var/run
