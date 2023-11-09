@@ -54,7 +54,7 @@ func Setup() {
 
 func setupGoroutinePool() {
 
-	pool, err := ants.NewPool(3, ants.WithNonblocking(false))
+	pool, err := ants.NewPool(300, ants.WithNonblocking(false))
 	if err != nil {
 		log.Fatal("goroutine 池子创建失败")
 	}

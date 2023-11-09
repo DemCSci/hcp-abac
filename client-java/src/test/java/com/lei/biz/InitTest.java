@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,6 +57,13 @@ public class InitTest {
 
     public static String goServerRootUrl = "http://127.0.0.1:7788";
 
+
+    @Test
+    public void  registerCurrentUser() throws ContractException, InterruptedException, TimeoutException {
+        JsonData jsonData = userController.add();
+        System.out.println(jsonData);
+        System.out.println("registerCurrentUser 成功");
+    }
 
     @Test
     public void allInit() throws Exception {
@@ -101,7 +109,7 @@ public class InitTest {
                 .value("40")
                 .money(50)
                 .notBefore("1669791474807")
-                .notAfter("1672383443000").build();
+                .notAfter("1772383443000").build();
         JsonData jsonData = attributeController.addAttribute(attributeRequest);
         System.out.println(jsonData);
     }
@@ -118,9 +126,9 @@ public class InitTest {
     }
 
     @Test
-    public void publishPrivateAttribute(String resourceId) throws  ContractException, InterruptedException, TimeoutException {
+    public void publishPrivateAttribute(@Value("") String resourceId) throws  ContractException, InterruptedException, TimeoutException {
         if (StringUtils.isBlank(resourceId)) {
-            resourceId = "resource:80a9ae48-e28b-4541-8400-fd8115212db9";
+            resourceId = "resource:c5f68ecc-3cb9-4382-bb6e-f6633f872dbf";
         }
         //需要更改resourceId 和 ownerId
         AttributeRequest attributeRequest = AttributeRequest.builder()
@@ -138,10 +146,10 @@ public class InitTest {
 
     }
     @Test
-    public void addPrivateAttribute(String attributeId) throws ContractException, InterruptedException, TimeoutException {
+    public void addPrivateAttribute(@Value("") String attributeId) throws ContractException, InterruptedException, TimeoutException {
         //需要更改resourceId 和 ownerId
         if (StringUtils.isBlank(attributeId)) {
-            attributeId = "attribute:private:resource:80a9ae48-e28b-4541-8400-fd8115212db9:occupation";
+            attributeId = "attribute:private:resource:c5f68ecc-3cb9-4382-bb6e-f6633f872dbf:occupation";
         }
         BuyPrivateAttributeRequest attributeRequest = BuyPrivateAttributeRequest.builder().attributeId("")
                 .buyer("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f36513034396332396d644335705a6d46756447467a655335755a58517354315539526d4669636d6c6a4c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a315655773d3dd41d8cd98f00b204e9800998ecf8427e")

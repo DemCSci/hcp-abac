@@ -48,16 +48,16 @@ func (decideApi *DecideApi) DecideNoRecord(ctx *gin.Context) {
 	}
 	//now := time.Now()
 	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
-	contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
-	contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
-	contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
-	contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
+	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
+	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
+	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
+	//contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
 	//fmt.Printf("花费%d us\n", time.Now().Sub(now).Microseconds())
-	if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
-		contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
-		decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
-		return
-	}
+	//if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
+	//	contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
+	//	decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
+	//	return
+	//}
 	//异步发送record
 	record := &model.Record{
 		Id:          "record:" + decideRequest.ResourceId + ":" + decideRequest.RequesterId + ":" + uuid.New(),
@@ -83,16 +83,16 @@ func (decideApi *DecideApi) DecideNoRecordPool(ctx *gin.Context) {
 		return
 	}
 	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
-	contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
-	contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
-	contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
-	contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
+	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
+	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
+	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
+	//contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
 
-	if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
-		contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
-		decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
-		return
-	}
+	//if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
+	//	contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
+	//	decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
+	//	return
+	//}
 	//异步发送record
 	record := &model.Record{
 		Id:          "record:" + decideRequest.ResourceId + ":" + decideRequest.RequesterId + ":" + uuid.New(),
@@ -102,7 +102,7 @@ func (decideApi *DecideApi) DecideNoRecordPool(ctx *gin.Context) {
 	}
 	err = setting.GoroutinePool.Submit(func() {
 		contract.CreateRecord(setting.ClientInfoMap["softMSP"].Contract, *record)
-		time.Sleep(time.Second * 1)
+		//time.Sleep(time.Millisecond * 100)
 	})
 	if err != nil {
 		setting.MyLogger.Fatal("放入协程池错误")
@@ -125,16 +125,16 @@ func (decideApi *DecideApi) DecideNoRecordRedis(ctx *gin.Context) {
 		return
 	}
 	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
-	contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
-	contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
-	contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
-	contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
+	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
+	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
+	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
+	//contractResponse5, _ := contract.DecideNoRecord(setting.ClientInfoMap["org5MSP"].Contract, decideRequest)
 
-	if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
-		contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
-		decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
-		return
-	}
+	//if contractResponse1 != contractResponse2 && contractResponse1 != contractResponse3 &&
+	//	contractResponse1 != contractResponse4 && contractResponse1 != contractResponse5 {
+	//	decideApi.respUtil.ErrorResp(403, "结果不一致，拒绝该请求", ctx)
+	//	return
+	//}
 	//异步发送record
 	record := &model.Record{
 		Id:          "record:" + decideRequest.ResourceId + ":" + decideRequest.RequesterId + ":" + uuid.New(),
