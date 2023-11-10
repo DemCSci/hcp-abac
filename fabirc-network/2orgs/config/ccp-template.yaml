@@ -11,22 +11,22 @@ organizations:
   ${ORG}:
     mspid: ${ORG}MSP
     peers:
-    - peer1.${ORG}.ifantasy.net
+    - peer1.${ORG}.lei.net
     certificateAuthorities:
-    - ${ORG}.ifantasy.net
+    - ${ORG}.lei.net
 peers:
-  peer1.${ORG}.ifantasy.net:
-    url: grpcs://peer1.${ORG}.ifantasy.net:${P0PORT}
+  peer1.${ORG}.lei.net:
+    url: grpcs://peer1.${ORG}.lei.net:${P0PORT}
     tlsCACerts:
       pem: |
           ${PEERPEM}
     grpcOptions:
-      ssl-target-name-override: peer1.${ORG}.ifantasy.net
-      hostnameOverride: peer1.${ORG}.ifantasy.net
+      ssl-target-name-override: peer1.${ORG}.lei.net
+      hostnameOverride: peer1.${ORG}.lei.net
 certificateAuthorities:
-  ${ORG}.ifantasy.net:
-    url: https://${ORG}.ifantasy.net:${CAPORT}
-    caName: ${ORG}.ifantasy.net
+  ${ORG}.lei.net:
+    url: https://${ORG}.lei.net:${CAPORT}
+    caName: ${ORG}.lei.net
     tlsCACerts:
       pem: 
         - |

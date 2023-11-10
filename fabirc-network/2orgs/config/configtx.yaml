@@ -14,7 +14,7 @@ Organizations:
     - &council
         Name: councilMSP
         ID: councilMSP
-        MSPDir: ../orgs/council.ifantasy.net/msp
+        MSPDir: ../orgs/council.lei.net/msp
         Policies: 
             Readers:
                 Type: Signature
@@ -28,50 +28,50 @@ Organizations:
         # 客户端和对等点可以分别连接到这些orderer以推送transactions和接收区块。
         # 此文件内的Orderer端口皆为容器内端口
         OrdererEndpoints:
-            - orderer1.council.ifantasy.net:7051
-            - orderer2.council.ifantasy.net:7054
-            - orderer3.council.ifantasy.net:7057
+            - orderer1.council.lei.net:7051
+            - orderer2.council.lei.net:7054
+            - orderer3.council.lei.net:7057
 
-    - &soft
-        Name: softMSP
-        ID: softMSP
-        MSPDir: ../orgs/soft.ifantasy.net/msp
+    - &org1
+        Name: org1MSP
+        ID: org1MSP
+        MSPDir: ../orgs/org1.lei.net/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('softMSP.admin', 'softMSP.peer', 'softMSP.client')"
+                Rule: "OR('org1MSP.admin', 'org1MSP.peer', 'org1MSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('softMSP.admin', 'softMSP.client')"
+                Rule: "OR('org1MSP.admin', 'org1MSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('softMSP.admin')"
+                Rule: "OR('org1MSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('softMSP.peer')"
+                Rule: "OR('org1MSP.peer')"
         AnchorPeers:
-            - Host: peer1.soft.ifantasy.net
+            - Host: peer1.org1.lei.net
               Port: 7251
     
-    - &hard
-        Name: hardMSP
-        ID: hardMSP
-        MSPDir: ../orgs/hard.ifantasy.net/msp
+    - &org2
+        Name: org2MSP
+        ID: org2MSP
+        MSPDir: ../orgs/org2.lei.net/msp
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('hardMSP.admin', 'hardMSP.peer', 'hardMSP.client')"
+                Rule: "OR('org2MSP.admin', 'org2MSP.peer', 'org2MSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('hardMSP.admin', 'hardMSP.client')"
+                Rule: "OR('org2MSP.admin', 'org2MSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('hardMSP.admin')"
+                Rule: "OR('org2MSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('hardMSP.peer')"
+                Rule: "OR('org2MSP.peer')"
         AnchorPeers:
-            - Host: peer1.hard.ifantasy.net
+            - Host: peer1.org2.lei.net
               Port: 7451
 
     
@@ -121,24 +121,24 @@ Orderer: &OrdererDefaults
     # 目前可用的类型为：solo，kafka，etcdraft
     OrdererType: etcdraft
     Addresses:
-        - orderer1.council.ifantasy.net:7051
-        - orderer2.council.ifantasy.net:7052
-        - orderer3.council.ifantasy.net:7053
+        - orderer1.council.lei.net:7051
+        - orderer2.council.lei.net:7052
+        - orderer3.council.lei.net:7053
     # 定义了EtcdRaft排序类型被选择时的配置
     EtcdRaft:
         Consenters:
-        - Host: orderer1.council.ifantasy.net
+        - Host: orderer1.council.lei.net
           Port: 7051
-          ClientTLSCert: ../orgs/council.ifantasy.net/registers/orderer1/tls-msp/signcerts/cert.pem
-          ServerTLSCert: ../orgs/council.ifantasy.net/registers/orderer1/tls-msp/signcerts/cert.pem
-        - Host: orderer2.council.ifantasy.net
+          ClientTLSCert: ../orgs/council.lei.net/registers/orderer1/tls-msp/signcerts/cert.pem
+          ServerTLSCert: ../orgs/council.lei.net/registers/orderer1/tls-msp/signcerts/cert.pem
+        - Host: orderer2.council.lei.net
           Port: 7054
-          ClientTLSCert: ../orgs/council.ifantasy.net/registers/orderer2/tls-msp/signcerts/cert.pem
-          ServerTLSCert: ../orgs/council.ifantasy.net/registers/orderer2/tls-msp/signcerts/cert.pem
-        - Host: orderer3.council.ifantasy.net
+          ClientTLSCert: ../orgs/council.lei.net/registers/orderer2/tls-msp/signcerts/cert.pem
+          ServerTLSCert: ../orgs/council.lei.net/registers/orderer2/tls-msp/signcerts/cert.pem
+        - Host: orderer3.council.lei.net
           Port: 7057
-          ClientTLSCert: ../orgs/council.ifantasy.net/registers/orderer3/tls-msp/signcerts/cert.pem
-          ServerTLSCert: ../orgs/council.ifantasy.net/registers/orderer3/tls-msp/signcerts/cert.pem
+          ClientTLSCert: ../orgs/council.lei.net/registers/orderer3/tls-msp/signcerts/cert.pem
+          ServerTLSCert: ../orgs/council.lei.net/registers/orderer3/tls-msp/signcerts/cert.pem
 
     # 区块打包的最大超时时间 (到了该时间就打包区块)
     BatchTimeout: 2s
@@ -214,7 +214,7 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *soft
-                - *hard
+                - *org1
+                - *org2
             Capabilities:
                 <<: *ApplicationCapabilities
