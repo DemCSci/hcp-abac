@@ -1,4 +1,4 @@
-#!/bin/bash -u
+#!/bin/bash
 docker stop $(docker ps -aq)
 docker rm $(docker ps -a | grep fabric | awk '{print $1}')
 docker rmi $(docker images dev-* -q)
