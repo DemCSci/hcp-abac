@@ -10,6 +10,7 @@ var (
 	helloAPi  api.HelloApi
 	userApi   api.UserApi
 	decideApi api.DecideApi
+	toolAPi   api.ToolApi
 )
 
 func InitRouter(contextPath string) *gin.Engine {
@@ -42,6 +43,9 @@ func InitRouter(contextPath string) *gin.Engine {
 		decide.POST("/DecideHashNoRecordRedis", decideApi.DecideHashNoRecordRedis)
 		decide.POST("/DecideDynamicHashNoRecordRedis", decideApi.DecideDynamicHashNoRecordRedis)
 	}
-
+	tool := router.Group(contextPath + "/tool")
+	{
+		tool.GET("/init", toolAPi.Init)
+	}
 	return router
 }

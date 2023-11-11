@@ -21,18 +21,18 @@ fabric:
   # wallet文件夹路径(自动创建)
   walletDirectory: wallet
   # 网络配置文件路径
-  networkConfigPath: E:/code/orgs/soft.ifantasy.net/connection-soft.yaml
+  networkConfigPath: E:/code/orgs/org1.lei.net/connection-org1.yaml
   # 用户证书路径
   #certificatePath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem
   #certificatePath: crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
-  certificatePath: E:/code/orgs/soft.ifantasy.net/registers/user1/msp/signcerts/cert.pem
+  certificatePath: E:/code/orgs/org1.lei.net/registers/user1/msp/signcerts/cert.pem
   #certificatePath: crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem
   # 用户私钥路径
   #privateKeyPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/priv_sk
   #privateKeyPath: crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk
-  privateKeyPath: E:/code/orgs/soft.ifantasy.net/registers/user1/msp/keystore
+  privateKeyPath: E:/code/orgs/org1.lei.net/registers/user1/msp/keystore
   # 访问的组织名
-  mspid: softMSP
+  mspid: org1MSP
   # 用户名
   username: user1
   # 通道名字

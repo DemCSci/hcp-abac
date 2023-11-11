@@ -27,7 +27,7 @@ func (decideApi *DecideApi) DecideNoRecord2(ctx *gin.Context) {
 		return
 	}
 	//now := time.Now()
-	contractResponse1, err := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+	contractResponse1, err := contract.DecideNoRecord(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	//fmt.Printf("花费%d us\n", time.Now().Sub(now).Microseconds())
 	if err != nil {
 		decideApi.respUtil.ErrorResp(http.StatusInternalServerError, err.Error(), ctx)
@@ -47,7 +47,7 @@ func (decideApi *DecideApi) DecideNoRecord(ctx *gin.Context) {
 		return
 	}
 	//now := time.Now()
-	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
 	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
 	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
@@ -66,7 +66,7 @@ func (decideApi *DecideApi) DecideNoRecord(ctx *gin.Context) {
 		Response:    contractResponse1,
 	}
 
-	contract.CreateRecord(setting.ClientInfoMap["softMSP"].Contract, *record)
+	contract.CreateRecord(setting.ClientInfoMap["org1MSP"].Contract, *record)
 	decideApi.respUtil.SuccessResp(contractResponse1, ctx)
 }
 
@@ -82,7 +82,7 @@ func (decideApi *DecideApi) DecideNoRecordPool(ctx *gin.Context) {
 		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
 		return
 	}
-	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
 	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
 	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
@@ -101,7 +101,7 @@ func (decideApi *DecideApi) DecideNoRecordPool(ctx *gin.Context) {
 		Response:    contractResponse1,
 	}
 	err = setting.GoroutinePool.Submit(func() {
-		contract.CreateRecord(setting.ClientInfoMap["softMSP"].Contract, *record)
+		contract.CreateRecord(setting.ClientInfoMap["org1MSP"].Contract, *record)
 		//time.Sleep(time.Millisecond * 100)
 	})
 	if err != nil {
@@ -124,7 +124,7 @@ func (decideApi *DecideApi) DecideNoRecordRedis(ctx *gin.Context) {
 		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
 		return
 	}
-	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+	contractResponse1, _ := contract.DecideNoRecord(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	//contractResponse2, _ := contract.DecideNoRecord(setting.ClientInfoMap["webMSP"].Contract, decideRequest)
 	//contractResponse3, _ := contract.DecideNoRecord(setting.ClientInfoMap["hardMSP"].Contract, decideRequest)
 	//contractResponse4, _ := contract.DecideNoRecord(setting.ClientInfoMap["org4MSP"].Contract, decideRequest)
@@ -162,7 +162,7 @@ func (decideApi *DecideApi) DecideWithRecord(ctx *gin.Context) {
 		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
 		return
 	}
-	record, _ := contract.DecideWithRecord(setting.ClientInfoMap["softMSP"].Contract, decideRequest)
+	record, _ := contract.DecideWithRecord(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	decideApi.respUtil.SuccessResp(record, ctx)
 }
 

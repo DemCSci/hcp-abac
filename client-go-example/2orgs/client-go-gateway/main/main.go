@@ -16,7 +16,7 @@ const (
 
 func main() {
 
-	cryptoPath1 := "E:/code/orgs/org1.ifantasy.net"
+	cryptoPath1 := "E:/code/orgs/org1.lei.net"
 	certPath1 := path.Join(cryptoPath1, "registers", "user1", "msp", "signcerts", "cert.pem")
 	keyPath1 := path.Join(cryptoPath1, "registers", "user1", "msp", "keystore")
 	tlsCertPath1 := path.Join(cryptoPath1, "assets", "tls-ca-cert.pem")

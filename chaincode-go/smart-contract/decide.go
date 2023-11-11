@@ -122,7 +122,7 @@ func (s *SmartContract) DecideWithRecord(ctx contractapi.TransactionContextInter
 	var decideRequest model.DecideRequest
 	err := json.Unmarshal([]byte(request), &decideRequest)
 	if err != nil {
-		return "false", err
+		return "请求序反序列化失败false", err
 	}
 
 	//查询资源
@@ -145,7 +145,7 @@ func (s *SmartContract) DecideWithRecord(ctx contractapi.TransactionContextInter
 		i++
 	}
 	if i == len(controllers) {
-		return "false", fmt.Errorf("资源控制器身份验证不通过")
+		return "资源控制器身份验证不通过,false", fmt.Errorf("资源控制器身份验证不通过")
 	}
 	//验证请求者身份
 
@@ -160,13 +160,13 @@ func (s *SmartContract) DecideWithRecord(ctx contractapi.TransactionContextInter
 	publicAttributeEndKey := string(BytesPrefix([]byte(publicAttributeStartKey)))
 	publicAttributeRange, err := ctx.GetStub().GetStateByRange(publicAttributeStartKey, publicAttributeEndKey)
 	if err != nil {
-		return "", fmt.Errorf("获取公有属性失败")
+		return "获取公有属性失败", fmt.Errorf("获取公有属性失败")
 	}
 	defer publicAttributeRange.Close()
 	for publicAttributeRange.HasNext() {
 		result, err := publicAttributeRange.Next()
 		if err != nil {
-			return "", fmt.Errorf("错误")
+			return "查询公有属性是该", fmt.Errorf("错误")
 		}
 		var attribute model.Attribute
 		json.Unmarshal(result.Value, &attribute)
@@ -177,13 +177,13 @@ func (s *SmartContract) DecideWithRecord(ctx contractapi.TransactionContextInter
 	privateAttributeEndKey := string(BytesPrefix([]byte(publicAttributeStartKey)))
 	privateAttributeRange, err := ctx.GetStub().GetStateByRange(privateAttributeStartKey, privateAttributeEndKey)
 	if err != nil {
-		return "", fmt.Errorf("获取公有属性失败")
+		return "获取私有属性失败", fmt.Errorf("获取私有属性失败")
 	}
 	defer privateAttributeRange.Close()
 	for privateAttributeRange.HasNext() {
 		result, err := privateAttributeRange.Next()
 		if err != nil {
-			return "", fmt.Errorf("错误")
+			return "获取私有属性失败", fmt.Errorf("错误")
 		}
 		var attribute model.Attribute
 		json.Unmarshal(result.Value, &attribute)
