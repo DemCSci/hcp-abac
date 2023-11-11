@@ -1,22 +1,22 @@
 ---
-name: test-network-soft
+name: test-network-org1
 version: 1.0.0
 client:
-  organization: soft
+  organization: org1
   connection:
     timeout:
       peer:
         endorser: '300'
 organizations:
-  soft:
-    mspid: softMSP
+  org1:
+    mspid: org1MSP
     peers:
-    - peer1.soft.ifantasy.net
+    - peer1.org1.ifantasy.net
     certificateAuthorities:
-    - soft.ifantasy.net
+    - org1.ifantasy.net
 peers:
-  peer1.soft.ifantasy.net:
-    url: grpcs://peer1.soft.ifantasy.net:7251
+  peer1.org1.ifantasy.net:
+    url: grpcs://peer1.org1.ifantasy.net:7251
     tlsCACerts:
       pem: |
           -----BEGIN CERTIFICATE-----
@@ -35,12 +35,12 @@ peers:
           -----END CERTIFICATE-----
           
     grpcOptions:
-      ssl-target-name-override: peer1.soft.ifantasy.net
-      hostnameOverride: peer1.soft.ifantasy.net
+      ssl-target-name-override: peer1.org1.ifantasy.net
+      hostnameOverride: peer1.org1.ifantasy.net
 certificateAuthorities:
-  soft.ifantasy.net:
-    url: https://soft.ifantasy.net:7250
-    caName: soft.ifantasy.net
+  org1.ifantasy.net:
+    url: https://org1.ifantasy.net:7250
+    caName: org1.ifantasy.net
     tlsCACerts:
       pem: 
         - |

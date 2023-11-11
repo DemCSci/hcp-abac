@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ORG=soft
+ORG=org1
 P0PORT=7251
 CAPORT=7250
-cryptoPath=$LOCAL_CA_PATH/soft.ifantasy.net
+cryptoPath=$LOCAL_CA_PATH/org1.lei.net
 PEERPEM=$cryptoPath/assets/tls-ca-cert.pem
 CAPEM=$cryptoPath/assets/ca-cert.pem
 
@@ -15,4 +15,4 @@ sed -e "s/\${ORG}/$ORG/" \
         -e "s/\${CAPORT}/$CAPORT/" \
         -e "s#\${PEERPEM}#$PP#" \
         -e "s#\${CAPEM}#$CP#" \
-        config/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'  > connection-soft.yaml
+        config/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'  > connection-org1.yaml
