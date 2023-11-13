@@ -305,7 +305,8 @@ func (s *SmartContract) DecideNoRecord4Attributes(ctx contractapi.TransactionCon
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	//currentTimeInt64 := time.Now().Unix()*1000
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
 		publicAttributeMap["ip"].Value == "192.168.2.1" && currentTime >= "1669791474807" {
@@ -392,7 +393,7 @@ func (s *SmartContract) DecideWithRecord4Attributes(ctx contractapi.TransactionC
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
 		publicAttributeMap["ip"].Value == "192.168.2.1" && currentTime >= "1669791474807" {
@@ -495,7 +496,7 @@ func (s *SmartContract) DecideNoRecord8Attributes(ctx contractapi.TransactionCon
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
 		publicAttributeMap["ip"].Value == "192.168.2.1" && currentTime >= "1669791474807" &&
@@ -584,7 +585,7 @@ func (s *SmartContract) DecideWithRecord8Attributes(ctx contractapi.TransactionC
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
@@ -690,7 +691,7 @@ func (s *SmartContract) DecideNoRecord16Attributes(ctx contractapi.TransactionCo
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
 		publicAttributeMap["ip"].Value == "192.168.2.1" && currentTime >= "1669791474807" &&
@@ -783,7 +784,7 @@ func (s *SmartContract) DecideWithRecord16Attributes(ctx contractapi.Transaction
 	//根据资源查找对应的策略
 	//这里暂时写死一个资源的策略
 
-	currentTimeInt64 := time.Now().UnixMilli()
+	currentTimeInt64 := time.Now().Unix() * 1000
 	currentTime := strconv.FormatInt(currentTimeInt64, 10)
 
 	if publicAttributeMap["age"].Value == "40" && privateAttributeMap["occupation"].Value == "doctor" &&
