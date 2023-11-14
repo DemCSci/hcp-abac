@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 type ToolApi struct {
@@ -415,6 +416,50 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		fmt.Println("公有属性添加失败")
 		return
 	}
+	fmt.Println("公有属性添加完成")
+	log.Println("全部初始化完成")
+	toolApi.respUtil.SuccessResp("全部初始化完毕", ctx)
+}
+
+//为了32个属性在16个属性的基础上判断增加额外的个属性
+func (toolApi *ToolApi) Init32(ctx *gin.Context) {
+
+	con := setting.ClientInfoMap["org1MSP"].Contract
+
+	// 从 A9-V9  到 A24-V24
+	// 添加公有属性
+	keyNum := 9
+	valueNum := 9
+	for keyNum <= 24 {
+		k := "A" + strconv.Itoa(keyNum)
+		v := "V" + strconv.Itoa(valueNum)
+
+		uuid, err := utils.GenerateUUID()
+		if err != nil {
+			return
+		}
+		id := "attribute:" + uuid
+		attribute := &contract.Attribute{
+			Id:         id,
+			Type:       "PUBLIC",
+			ResourceId: "",
+			Owner:      "",
+			Key:        k,
+			Value:      v,
+			NotBefore:  "1669791474807",
+			NotAfter:   "1772383443000",
+			Money:      10,
+		}
+		_, err = contract.AddAttribute(con, attribute)
+		if err != nil {
+			fmt.Println("公有属性添加失败")
+			return
+		}
+		fmt.Printf("K=%s, V=%s\n 属性添加完成", k, v)
+		keyNum++
+		valueNum++
+	}
+
 	fmt.Println("公有属性添加完成")
 	log.Println("全部初始化完成")
 	toolApi.respUtil.SuccessResp("全部初始化完毕", ctx)

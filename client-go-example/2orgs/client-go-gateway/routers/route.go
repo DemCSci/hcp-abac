@@ -50,6 +50,8 @@ func InitRouter(contextPath string) *gin.Engine {
 		decide.POST("/DecideNoRecord8Attributes", decideApi.DecideNoRecord8Attributes)
 		decide.POST("/DecideWithRecord16Attributes", decideApi.DecideWithRecord16Attributes)
 		decide.POST("/DecideNoRecord16Attributes", decideApi.DecideNoRecord16Attributes)
+		decide.POST("/DecideWithRecord32Attributes", decideApi.DecideWithRecord32Attributes)
+		decide.POST("/DecideNoRecord32Attributes", decideApi.DecideNoRecord32Attributes)
 	}
 	tool := router.Group(contextPath + "/tool")
 	{
@@ -57,6 +59,7 @@ func InitRouter(contextPath string) *gin.Engine {
 		tool.GET("/init4", toolAPi.Init4)
 		tool.GET("/init8", toolAPi.Init8)
 		tool.GET("/init16", toolAPi.Init16)
+		tool.GET("/init32", toolAPi.Init32)
 	}
 	return router
 }

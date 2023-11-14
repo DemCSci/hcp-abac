@@ -144,3 +144,33 @@ func DecideWithRecord16Attributes(contract *client.Contract, decideRequest reque
 	}
 	return string(result), nil
 }
+
+func DecideNoRecord32Attributes(contract *client.Contract, decideRequest request.DecideRequest) (string, error) {
+
+	jsonByte, err := json.Marshal(decideRequest)
+	if err != nil {
+		log.Println("序列化失败,%v\n", err)
+		return "", err
+	}
+	result, err := contract.EvaluateTransaction("DecideNoRecord32Attributes", string(jsonByte))
+	if err != nil {
+		log.Printf("调用Decide合约失败：%v\n", err)
+		return "", err
+	}
+	return string(result), nil
+}
+
+func DecideWithRecord32Attributes(contract *client.Contract, decideRequest request.DecideRequest) (string, error) {
+
+	jsonByte, err := json.Marshal(decideRequest)
+	if err != nil {
+		log.Println("序列化失败,%v\n", err)
+		return "", err
+	}
+	result, err := contract.SubmitTransaction("DecideWithRecord32Attributes", string(jsonByte))
+	if err != nil {
+		log.Printf("调用DecideWithRecord合约失败：%v\n", err)
+		return "", err
+	}
+	return string(result), nil
+}

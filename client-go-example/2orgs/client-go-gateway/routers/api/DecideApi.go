@@ -416,3 +416,44 @@ func (decideApi *DecideApi) DecideWithRecord16Attributes(ctx *gin.Context) {
 	record, _ := contract.DecideWithRecord16Attributes(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
 	decideApi.respUtil.SuccessResp(record, ctx)
 }
+
+/**
+使用redis消息队列异步上链
+*/
+func (decideApi *DecideApi) DecideNoRecord32Attributes(ctx *gin.Context) {
+
+	var decideRequest request.DecideRequest
+	err := ctx.BindJSON(&decideRequest)
+	if err != nil {
+		setting.MyLogger.Info("传入信息错误,err =", err)
+		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
+		return
+	}
+	contractResponse1, _ := contract.DecideNoRecord32Attributes(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
+
+	//异步发送record
+	record := &model.Record{
+		Id:          "record:" + decideRequest.ResourceId + ":" + decideRequest.RequesterId + ":" + uuid.New(),
+		RequesterId: decideRequest.RequesterId,
+		ResourceId:  decideRequest.RequesterId,
+		Response:    contractResponse1,
+	}
+
+	//contract.CreateRecord(contract.Contract1, *record)
+	recordJsonByte, err := json.Marshal(record)
+
+	setting.RedisClient.Publish("test-channel", string(recordJsonByte))
+	decideApi.respUtil.SuccessResp(contractResponse1, ctx)
+}
+
+func (decideApi *DecideApi) DecideWithRecord32Attributes(ctx *gin.Context) {
+	var decideRequest request.DecideRequest
+	err := ctx.BindJSON(&decideRequest)
+	if err != nil {
+		setting.MyLogger.Info("传入信息错误,err =", err)
+		decideApi.respUtil.IllegalArgumentErrorResp("传入信息错误", ctx)
+		return
+	}
+	record, _ := contract.DecideWithRecord32Attributes(setting.ClientInfoMap["org1MSP"].Contract, decideRequest)
+	decideApi.respUtil.SuccessResp(record, ctx)
+}
