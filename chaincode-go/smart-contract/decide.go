@@ -909,8 +909,8 @@ func (s *SmartContract) DecideNoRecord32Attributes(ctx contractapi.TransactionCo
 		publicAttributeMap["A15"].Value == "V15" && publicAttributeMap["A16"].Value == "V16" &&
 		publicAttributeMap["A17"].Value == "V17" && publicAttributeMap["A18"].Value == "V18" &&
 		publicAttributeMap["A19"].Value == "V19" && publicAttributeMap["A20"].Value == "V20" &&
-		publicAttributeMap["A21"].Value == "V21" && publicAttributeMap["A22"].Value == "V23" &&
-		publicAttributeMap["A24"].Value == "V24" && publicAttributeMap["A25"].Value == "V25" {
+		publicAttributeMap["A21"].Value == "V21" && publicAttributeMap["A22"].Value == "V22" &&
+		publicAttributeMap["A23"].Value == "V23" && publicAttributeMap["A24"].Value == "V24" {
 		return "true", nil
 	}
 	return "false", nil

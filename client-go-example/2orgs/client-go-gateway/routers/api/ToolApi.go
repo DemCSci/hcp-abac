@@ -68,6 +68,7 @@ func (toolApi *ToolApi) Init(ctx *gin.Context) {
 	privateAttributeId := "attribute:" + resourceId + ":" + attributeId
 	//获取当前的身份
 	identity := contract.GetSubmittingClientIdentity(con)
+	log.Println("当前身份：" + identity)
 	privateAttribute := &contract.Attribute{
 		Id:         privateAttributeId,
 		Type:       "PRIVATE",
