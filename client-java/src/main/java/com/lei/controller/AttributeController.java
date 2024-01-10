@@ -14,13 +14,19 @@ import org.hyperledger.fabric.gateway.impl.ContractImpl;
 import org.hyperledger.fabric.gateway.impl.GatewayImpl;
 import org.hyperledger.fabric.gateway.spi.CommitHandler;
 import org.hyperledger.fabric.gateway.spi.CommitHandlerFactory;
+import org.hyperledger.fabric.protos.common.Common;
+import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
 import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
+import org.hyperledger.fabric.sdk.transaction.ProposalBuilder;
+import org.hyperledger.fabric.sdk.transaction.TransactionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.json.Json;
+import java.io.*;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -86,11 +92,10 @@ public class AttributeController {
     }
 
 
-
     // 尝试只进行背书，不提交到orderer节点
     @PostMapping("/addAttributeOnlyPeer")
     @ApiOperation("增加属性(只进行背书)")
-    public JsonData  addAttributeOnlyPeer(@RequestBody AttributeRequest request) throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException {
+    public JsonData  addAttributeOnlyPeer(@RequestBody AttributeRequest request) throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException, IOException {
 
         TransactionProposalRequest transactionProposalRequest = network.getGateway().getClient().newTransactionProposalRequest();
         transactionProposalRequest.setChaincodeName("abac");
@@ -109,6 +114,7 @@ public class AttributeController {
         transactionProposalRequest.setArgs(JsonUtil.obj2Json(attribute));
         Collection<ProposalResponse> proposalResponses = channel.sendTransactionProposal(transactionProposalRequest,
                 network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+
         // 自己验证一下
         validProposalResponses = validatePeerResponses(proposalResponses);
 
@@ -147,22 +153,19 @@ public class AttributeController {
     // 只提交到orderer节点
     @PostMapping("/addAttributeOnlyOrder")
     @ApiOperation("增加属性(只发送到orderer节点)")
-    public JsonData  addAttributeOnlyOrder() throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException {
+    public JsonData  addAttributeOnlyOrder() throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException, IOException, ClassNotFoundException, NoSuchMethodException {
 
-        for (int i = 0; i < 100; i++) {
-            TimeUnit.MILLISECONDS.sleep(300);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
-                            .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
-                    channel.sendTransaction(validProposalResponses, transactionOptions);
-                }
-            }).start();
+        ProposalResponse proposalResponse = validProposalResponses.iterator().next();
+        for (int i = 0; i < 10000; i++) {
+            Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
+                    .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
+            channel.sendTransaction(validProposalResponses, transactionOptions);
         }
 
+//        Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
+//                .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
+//        channel.sendTransaction(validProposalResponses, transactionOptions);
 
-//        ProposalResponse proposalResponse = validProposalResponses.iterator().next();
 //        GatewayImpl gatewayImpl = (GatewayImpl)gateway;
 //        CommitHandlerFactory commitHandlerFactory = gatewayImpl.getCommitHandlerFactory();
 //        CommitHandler commitHandler = commitHandlerFactory.create(proposalResponse.getTransactionID(), network);

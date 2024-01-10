@@ -31,7 +31,7 @@ func (toolApi *ToolApi) Init(ctx *gin.Context) {
 		return
 	}
 	id := "attribute:" + uuid
-	attribute := &contract.Attribute{
+	attribute := &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -69,7 +69,7 @@ func (toolApi *ToolApi) Init(ctx *gin.Context) {
 	//获取当前的身份
 	identity := contract.GetSubmittingClientIdentity(con)
 	log.Println("当前身份：" + identity)
-	privateAttribute := &contract.Attribute{
+	privateAttribute := &model.Attribute{
 		Id:         privateAttributeId,
 		Type:       "PRIVATE",
 		ResourceId: resourceId,
@@ -116,7 +116,7 @@ func (toolApi *ToolApi) Init4(ctx *gin.Context) {
 		return
 	}
 	id := "attribute:" + uuid
-	attribute := &contract.Attribute{
+	attribute := &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -148,7 +148,7 @@ func (toolApi *ToolApi) Init8(ctx *gin.Context) {
 		return
 	}
 	id := "attribute:" + uuid
-	attribute := &contract.Attribute{
+	attribute := &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -170,7 +170,7 @@ func (toolApi *ToolApi) Init8(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -192,7 +192,7 @@ func (toolApi *ToolApi) Init8(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -214,7 +214,7 @@ func (toolApi *ToolApi) Init8(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -247,7 +247,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id := "attribute:" + uuid
-	attribute := &contract.Attribute{
+	attribute := &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -269,7 +269,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -291,7 +291,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -313,7 +313,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -335,7 +335,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -357,7 +357,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -379,7 +379,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -401,7 +401,7 @@ func (toolApi *ToolApi) Init16(ctx *gin.Context) {
 		return
 	}
 	id = "attribute:" + uuid
-	attribute = &contract.Attribute{
+	attribute = &model.Attribute{
 		Id:         id,
 		Type:       "PUBLIC",
 		ResourceId: "",
@@ -440,7 +440,7 @@ func (toolApi *ToolApi) Init32(ctx *gin.Context) {
 			return
 		}
 		id := "attribute:" + uuid
-		attribute := &contract.Attribute{
+		attribute := &model.Attribute{
 			Id:         id,
 			Type:       "PUBLIC",
 			ResourceId: "",

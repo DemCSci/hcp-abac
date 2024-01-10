@@ -7,38 +7,26 @@ import (
 	"log"
 )
 
-type Attribute struct {
-	Id         string  `json:"id"`
-	Type       string  `json:"type"`
-	ResourceId string  `json:"resourceId"`
-	Owner      string  `json:"ownerId"`
-	Key        string  `json:"key"`
-	Value      string  `json:"value"`
-	NotBefore  string  `json:"notBefore"`
-	NotAfter   string  `json:"notAfter"`
-	Money      float64 `json:"money"`
-}
-
 // 增加公有属性
-func AddAttribute(contract *client.Contract, attribute *Attribute) (string, error) {
+func AddAttribute(contract *client.Contract, attribute *model.Attribute) (string, error) {
 	attributeJsonByte, err := json.Marshal(attribute)
 	if err != nil {
 		log.Fatalf("序列化失败：%v\n", err)
 	}
 	result, err := contract.SubmitTransaction("AddAttribute", string(attributeJsonByte))
 	if err != nil {
-		log.Printf("调用AddUser合约失败：%v\n", err)
+		log.Printf("调用AddAttribute合约失败：%v\n", err)
 	}
 	return string(result), err
 }
-func PublishPrivateAttribute(contract *client.Contract, attribute *Attribute) (string, error) {
+func PublishPrivateAttribute(contract *client.Contract, attribute *model.Attribute) (string, error) {
 	attributeJsonByte, err := json.Marshal(attribute)
 	if err != nil {
 		log.Fatalf("序列化失败：%v\n", err)
 	}
 	result, err := contract.SubmitTransaction("PublishPrivateAttribute", string(attributeJsonByte))
 	if err != nil {
-		log.Printf("调用AddUser合约失败：%v\n", err)
+		log.Printf("调用PublishPrivateAttribute合约失败：%v\n", err)
 	}
 	return string(result), err
 }
@@ -51,9 +39,22 @@ func BuyPrivateAttribute(contract *client.Contract, request *model.BuyAttributeR
 	}
 	result, err := contract.SubmitTransaction("BuyPrivateAttribute", string(attributeJsonByte))
 	if err != nil {
-		log.Printf("调用AddUser合约失败：%v\n", err)
+		log.Printf("调用BuyPrivateAttribute合约失败：%v\n", err)
 	}
 	return string(result), err
+}
+
+// 根据用户id 查询属性
+func FindAttributeByUserId(contract *client.Contract, userId string) ([]model.Attribute, error) {
+
+	result, err := contract.EvaluateTransaction("FindAttributeByUserId", userId)
+	if err != nil {
+		log.Printf("调用FindAttributeByUserId合约失败：%v\n", err)
+		return nil, err
+	}
+	var attributes []model.Attribute
+	json.Unmarshal(result, &attributes)
+	return attributes, err
 }
 
 //

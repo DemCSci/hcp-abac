@@ -34,7 +34,9 @@ func main() {
 	gateway := newGateway(clientInfo1)
 	defer gateway.Close()
 	network := gateway.GetNetwork(channelName)
+
 	clientInfo1.Contract = network.GetContract(chaincodeName)
+
 	clientInfo1.Live = true
 	log.Println("peer1.org1.lei.net 连接成功")
 
@@ -64,10 +66,6 @@ func main() {
 	//填到到map中去
 	setting.ClientInfoMap[clientInfo1.MspID] = &clientInfo1
 	//setting.ClientInfoMap[clientInfo2.MspID] = &clientInfo2
-
-	//
-	//setting.GlobalConsistent.Add(clientInfo1.MspID)
-	//setting.GlobalConsistent.Add(clientInfo2.MspID)
 
 	setting.Setup()
 
