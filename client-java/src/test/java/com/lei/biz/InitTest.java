@@ -60,7 +60,7 @@ public class InitTest {
 
     @Test
     public void  registerCurrentUser() throws ContractException, InterruptedException, TimeoutException {
-        JsonData jsonData = userController.add();
+        JsonData jsonData = userController.add("org1");
         System.out.println(jsonData);
         System.out.println("registerCurrentUser 成功");
     }

@@ -75,7 +75,7 @@ public class ResourceController {
     @GetMapping("/find")
     public JsonData findResource(@RequestParam("id")String resourceId) throws ContractException {
 
-        byte[] result = contract.evaluateTransaction("FindResourceById");
+        byte[] result = contract.evaluateTransaction("FindResourceById", resourceId);
 
         log.info("调用结果:" + new String(result));
 

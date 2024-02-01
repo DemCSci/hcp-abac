@@ -22,4 +22,6 @@ public class User {
     private String id;
     @ApiModelProperty("用户所具有的钱")
     private double money;
+    @ApiModelProperty("用户的组织")
+    private String  org;
 }
