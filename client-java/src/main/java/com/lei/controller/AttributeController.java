@@ -229,7 +229,7 @@ public class AttributeController {
      */
     @GetMapping("/findByResourceId")
     @ApiOperation("根据资源id查找属性")
-    public JsonData find(String resourceId) throws ContractException {
+    public JsonData find(@RequestParam("resourceId")String resourceId) throws ContractException {
         byte[] attributes = contract.evaluateTransaction("FindAttributeByResourceId", resourceId);
 
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(attributes, Attribute[].class));
@@ -258,5 +258,19 @@ public class AttributeController {
     }
 
 
+    @GetMapping("/FindAttributeById")
+    @ApiOperation("根据属性id查询属性")
+    public JsonData findAttributeById(@RequestParam("attributeId") String attributeId) throws ContractException {
+        Transaction transaction = contract.createTransaction("FindAttributeById")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        byte[] attribute = transaction.evaluate(attributeId);
+        Map<String, Object> map = new HashMap<>(1);
+        if (attribute.length != 0) {
+            map.put("data", JsonUtil.bytes2Obj(attribute, Attribute.class));
+        }else {
+            map.put("data", 0);
+        }
+        return JsonData.buildSuccess(map);
+    }
 
 }
