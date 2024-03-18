@@ -3,7 +3,6 @@ package com.lei.service.impl;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lei.config.GatewayConfig;
 import com.lei.service.ChannelService;
-import com.lei.util.JsonData;
 import com.lei.vo.KVRead;
 import com.lei.vo.KVWrite;
 import com.lei.vo.TransactionActionInfo;
@@ -41,23 +40,38 @@ public class ChannelServiceImpl implements ChannelService {
     private GatewayConfig gatewayConfig;
 
     @Override
-    public JsonData queryBlockByHash(String hash) throws DecoderException, InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
+    public com.lei.vo.BlockInfo queryBlockByHash(String hash) throws DecoderException, InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
         BlockInfo blockInfo = channel.queryBlockByHash(Hex.decodeHex(hash));
 
-        String channelId = blockInfo.getChannelId();
-        long blockNumber = blockInfo.getBlockNumber();
-        String dataHash = Hex.encodeHexString(blockInfo.getDataHash());
-        String previousHash = Hex.encodeHexString(blockInfo.getPreviousHash());
-        int transactionCount = blockInfo.getTransactionCount();
+        return convert(blockInfo);
+    }
 
-        //log.info("channelId={},blockNumber={},dataHash={},previousHash={},transactionCount={}",channelId,
-        //        blockNumber,dataHash,previousHash, transactionCount);
-        int envelopeCount = blockInfo.getEnvelopeCount();
-        //log.info("envelopeCount={}",envelopeCount);
+    @Override
+    public com.lei.vo.BlockInfo queryBlockByNumber(Long blkNumber) throws InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
+        BlockInfo blockInfo = channel.queryBlockByNumber(blkNumber);
+        return convert(blockInfo);
+    }
+
+    private com.lei.vo.BlockInfo convert(BlockInfo blockInfo) throws InvalidProtocolBufferException {
+        if (blockInfo == null) {
+            return null;
+        }
+
+        com.lei.vo.BlockInfo info = new com.lei.vo.BlockInfo();
+        String channelId = info.getChannelId();
+        info.setChannelId(blockInfo.getChannelId());
+        info.setBlockNumber(blockInfo.getBlockNumber());
+        info.setDataHash(Hex.encodeHexString(blockInfo.getDataHash()));
+        info.setPreviousHash(Hex.encodeHexString(blockInfo.getPreviousHash()));
+        info.setType(blockInfo.getType().name());
+
+        info.setTransactionCount(blockInfo.getTransactionCount());
+        info.setEnvelopeCount(blockInfo.getEnvelopeCount());
+
+
+
         Iterable<BlockInfo.EnvelopeInfo> envelopeInfoIterable = blockInfo.getEnvelopeInfos();
-
         List<TransactionEnvelopeInfo> transactions = new ArrayList<>();
-
         for (BlockInfo.EnvelopeInfo envelopeInfo : envelopeInfoIterable) {
             String envelopeInfoChannelId = envelopeInfo.getChannelId();
             String type = envelopeInfo.getType().name();
@@ -164,15 +178,9 @@ public class ChannelServiceImpl implements ChannelService {
 
         }
 
-        com.lei.vo.BlockInfo info = com.lei.vo.BlockInfo.builder().channelId(channelId)
-                .blockNumber(blockNumber)
-                .dataHash(dataHash)
-                .previousHash(previousHash)
-                .transactionCount(transactionCount)
-                .envelopeCount(envelopeCount)
-                .transactions(transactions).build();
-
-        return JsonData.buildSuccess(info);
+        info.setTransactions(transactions);
+        return info;
     }
+
 
 }

@@ -1,7 +1,9 @@
 package com.lei.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BlockInfo {
     /**
      * 通道的名字
@@ -31,6 +35,11 @@ public class BlockInfo {
      * 前一个区块的hash
      */
     private String previousHash;
+
+    /**
+     * 区块类型
+     */
+    private String type;
 
     /**
      * 区块中包含交易的数量

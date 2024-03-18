@@ -6,6 +6,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lei.config.GatewayConfig;
 import com.lei.service.ChannelService;
+import com.lei.service.impl.ChannelServiceImpl;
 import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
 import com.lei.vo.HeightInfo;
@@ -25,12 +26,15 @@ import org.hyperledger.fabric.protos.peer.TransactionPackage;
 import org.hyperledger.fabric.sdk.*;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
+import org.hyperledger.fabric.sdk.exception.TransactionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -136,7 +140,30 @@ public class ChannelController {
     @GetMapping("/queryBlockByHash")
     @ApiOperation("根据hash查询区块")
     public JsonData queryBlockByHash(String hash) throws DecoderException, InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
-        return channelService.queryBlockByHash(hash);
+        com.lei.vo.BlockInfo blockInfo = channelService.queryBlockByHash(hash);
+        return JsonData.buildSuccess(blockInfo);
+    }
+
+    @GetMapping("/getAllOrder")
+    @ApiOperation("获取order节点")
+    public JsonData getAllOrder() {
+        Collection<Orderer> orderers = channel.getOrderers();
+        return JsonData.buildSuccess(orderers);
+    }
+
+    @GetMapping("/getChannelConfig")
+    @ApiOperation("获取通道配置")
+    public JsonData getChannelConfig() throws InvalidArgumentException, TransactionException {
+        byte[] channelConfigurationBytes = channel.getChannelConfigurationBytes();
+        return JsonData.buildSuccess(new String(channelConfigurationBytes, StandardCharsets.UTF_8));
+    }
+
+    @GetMapping("/getBlockByNumber")
+    @ApiOperation("根据区块编码获取区块")
+    public JsonData getBlockByNumber(@RequestParam("blockNumber") Long blockNumber) throws InvalidArgumentException, ProposalException, InvalidProtocolBufferException {
+        com.lei.vo.BlockInfo blockInfo = channelService.queryBlockByNumber(blockNumber);
+
+        return JsonData.buildSuccess(blockInfo);
     }
 
 }

@@ -7,10 +7,11 @@ import (
 )
 
 var (
-	helloAPi  api.HelloApi
-	userApi   api.UserApi
-	decideApi api.DecideApi
-	toolAPi   api.ToolApi
+	helloAPi     api.HelloApi
+	userApi      api.UserApi
+	decideApi    api.DecideApi
+	toolAPi      api.ToolApi
+	attributeApi api.AttributeApi
 )
 
 func InitRouter(contextPath string) *gin.Engine {
@@ -29,6 +30,14 @@ func InitRouter(contextPath string) *gin.Engine {
 		user.POST("/add", userApi.AddUser)
 		user.POST("/addAllUser", userApi.AddAllUser)
 		user.GET("/my", userApi.GetSubmittingClientIdentity)
+	}
+
+	attribute := router.Group(contextPath + "/attribute")
+	{
+		attribute.GET("/attributes", attributeApi.FindAttributeByUserId)
+		attribute.POST("/addAttribute", attributeApi.AddAttribute)
+		attribute.POST("/addAttributeOnlyPeer", attributeApi.AddAttributeOnlyPeer)
+		attribute.POST("/AddAttributeOnlyOrderer", attributeApi.AddAttributeOnlyOrderer)
 	}
 
 	decide := router.Group(contextPath + "/decide")

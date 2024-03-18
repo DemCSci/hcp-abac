@@ -2,11 +2,15 @@ package com.lei.biz;
 
 
 
+import com.alibaba.fastjson2.JSON;
 import com.lei.controller.request.AttributeRequest;
 import com.lei.controller.request.BuyPrivateAttributeRequest;
+import com.lei.controller.request.ResourceRequest;
 import com.lei.enums.AttributeTypeEnum;
 import com.lei.model.Attribute;
 
+import com.lei.model.User;
+import com.lei.util.JsonData;
 import com.lei.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
@@ -25,6 +29,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -43,58 +48,119 @@ public class AttributeTest {
     private Network network;
 
     @Test
+    public void init() throws ContractException, InterruptedException, TimeoutException {
+        //注册自身身份
+        Transaction transaction = contract.createTransaction("CreateUser")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        User user = User.builder()
+                .money(100)
+                .org("org1")
+                .build();
+        byte[] invokeResult = transaction.submit(JSON.toJSONString(user));
+        log.info("调用结果:" + new String(invokeResult));
+
+    }
+    @Test
+    public void addResource() throws ContractException, InterruptedException, TimeoutException {
+        //注册资源
+        ResourceRequest request = new ResourceRequest();
+        request.setId("resource:"+ "571971ca-932f-4e39-bc8d-475778f44401");
+        request.setUrl("http://www.baidu.com");
+        request.setDescription("我的资源");
+        Transaction transaction2 = contract.createTransaction("CreateResource")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        byte[] invokeResult2 = transaction2.submit(JSON.toJSONString(request));
+        log.info("调用结果:" + new String(invokeResult2));
+    }
+    //增加公有属性
+    @Test
+    public void AddPublicAttribute() throws ContractException, InterruptedException, TimeoutException {
+
+        Transaction transaction = contract.createTransaction("AddAttribute")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        Attribute attribute = Attribute.builder()
+                .id("attribute:" + UUID.randomUUID())
+                .type(AttributeTypeEnum.PUBLIC.name())
+                .ownerId("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e")
+                .key("age")
+                .value("40")
+                .notBefore("1669791474807")
+                .notAfter("1772383443000")
+                .build();
+
+        byte[] invokeResult = transaction.submit(JsonUtil.obj2Json(attribute));
+        log.info("调用结果:" +  new String(invokeResult));
+
+
+    }
+    //发布私有属性
+    @Test
+    public void publishPrivateAttribute() throws ContractException, InterruptedException, TimeoutException {
+        Transaction transaction = contract.createTransaction("PublishPrivateAttribute")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+
+        AttributeRequest attributeRequest = new AttributeRequest();
+        attributeRequest.setType("PRIVATE");
+        attributeRequest.setResourceId("resource:571971ca-932f-4e39-bc8d-475778f44401");
+        attributeRequest.setOwnerId("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
+        attributeRequest.setKey("occupation0");
+        attributeRequest.setValue("doctor");
+        attributeRequest.setMoney(0);
+        attributeRequest.setNotBefore("1669791474807");
+        attributeRequest.setNotAfter("1772383443000");
+        byte[] result = transaction.submit(JsonUtil.obj2Json(attributeRequest));
+        System.out.println(new String(result));
+
+    }
+    // 增加私有属性
+    @Test
+    public void AddPrivateAttribute() throws ContractException {
+        Transaction transaction = contract.createTransaction("BuyPrivateAttribute")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        BuyPrivateAttributeRequest request = new BuyPrivateAttributeRequest();
+        request.setAttributeId("attribute:private:resource:571971ca-932f-4e39-bc8d-475778f44401:occupation0");
+        request.setBuyer("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
+        request.setSeller("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
+
+        byte[] invokeResult = transaction.evaluate(JsonUtil.obj2Json(request));
+        System.out.println(new String(invokeResult));
+
+    }
+
+    // 测试增加公有属性
+    @Test
     public void testAddPublicAttribute() throws ContractException {
-        
-        long startTime  = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         for (int i = 0; i < 1000; i++) {
             Transaction transaction = contract.createTransaction("AddAttribute")
                     .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
             Attribute attribute = Attribute.builder()
                     .id("attribute:" + UUID.randomUUID())
                     .type(AttributeTypeEnum.PUBLIC.name())
-                    .ownerId("")
+                    .ownerId("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e")
                     .key("name")
                     .value("张三")
                     .notBefore("1669791474807")
-                    .notAfter("1672383443000")
+                    .notAfter("1772383443000")
                     .build();
 
             byte[] invokeResult = transaction.evaluate(JsonUtil.obj2Json(attribute));
             //log.info("调用结果:" +  new String(invokeResult));
-            String transactionId = transaction.getTransactionId();
-            Map<String, String > res = new HashMap(2);
-            res.put("txId", transactionId);
-            res.put("data", JsonUtil.obj2Json(invokeResult));
+//            String transactionId = transaction.getTransactionId();
+//            Map<String, String > res = new HashMap(2);
+//            res.put("txId", transactionId);
+//            res.put("data", JsonUtil.obj2Json(invokeResult));
             //log.info(JsonUtil.obj2Json(res));
         }
-        long endTime = System.currentTimeMillis();
-        log.error("执行时间：{}ms",endTime-startTime); //6158ms
+        long endTime = System.nanoTime();
+        log.error("执行时间：{}ms",(endTime-startTime) / 1000000.0); //5614 ms
     }
 
-    @Test
-    public void testAddPrivateAttribute() throws ContractException {
-        long startTime  = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
-            Transaction transaction = contract.createTransaction("BuyPrivateAttribute")
-                    .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
-            BuyPrivateAttributeRequest request = new BuyPrivateAttributeRequest();
-            request.setAttributeId("attribute:private:resource:571971ca-932f-4e39-bc8d-475778f44401:occupation0");
-            request.setBuyer("user:x509::CN=Admin@org1.example.com,OU=admin,L=San Francisco,ST=California,C=US::CN=ca.org1.example.com,O=org1.example.com,L=San Francisco,ST=California,C=US");
-            request.setSeller("user:x509::CN=Admin@org1.example.com,OU=admin,L=San Francisco,ST=California,C=US::CN=ca.org1.example.com,O=org1.example.com,L=San Francisco,ST=California,C=US");
 
-            byte[] invokeResult = transaction.evaluate(JsonUtil.obj2Json(request));
-            Map<String, Object> map = new HashMap<>(2);
-            map.put("txId", transaction.getTransactionId());
-            map.put("data", new String(invokeResult));
-            //log.info(JsonUtil.obj2Json(map));
-        }
-        long endTime = System.currentTimeMillis();
-        log.error("执行时间：{}ms",endTime-startTime); // 6504ms
-    }
-
+    //发布私有属性 发布之前需要注册资源
     @Test
-    public void testPublishPrivateAttribute() throws ContractException {
-        long startTime  = System.currentTimeMillis();
+    public void testPublishPrivateAttribute() throws ContractException, InterruptedException, TimeoutException {
+        long startTime  = System.nanoTime();
         for (int i = 0; i < 1000; i++) {
             Transaction transaction = contract.createTransaction("PublishPrivateAttribute")
                     .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
@@ -102,81 +168,70 @@ public class AttributeTest {
             AttributeRequest attributeRequest = new AttributeRequest();
             attributeRequest.setType("PRIVATE");
             attributeRequest.setResourceId("resource:571971ca-932f-4e39-bc8d-475778f44401");
-            attributeRequest.setOwnerId("user:x509::CN=Admin@org1.example.com,OU=admin,L=San Francisco,ST=California,C=US::CN=ca.org1.example.com,O=org1.example.com,L=San Francisco,ST=California,C=US");
+            attributeRequest.setOwnerId("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
             attributeRequest.setKey("occupation0");
             attributeRequest.setValue("doctor");
             attributeRequest.setMoney(0);
             attributeRequest.setNotBefore("1669791474807");
-            attributeRequest.setNotAfter("1672383443000");
+            attributeRequest.setNotAfter("1772383443000");
             byte[] result = transaction.evaluate(JsonUtil.obj2Json(attributeRequest));
 
-            Map<String, Object> map = new HashMap<>(2);
-            map.put("txId", transaction.getTransactionId());
-            // 里面应该是 属性id
-            map.put("data", new String(result));
+//            Map<String, Object> map = new HashMap<>(2);
+//            map.put("txId", transaction.getTransactionId());
+//            // 里面应该是 属性id
+//            map.put("data", new String(result));
             //log.info(JsonUtil.obj2Json(map));
         }
-        long endTime = System.currentTimeMillis();
-        log.error("执行时间：{}ms",endTime-startTime); // 5195ms
+        long endTime = System.nanoTime();
+        log.error("执行时间：{}ms",(endTime-startTime) / 1000000.0); // 5753
+    }
+    //根据资源检索私有属性
+    @Test
+    public void testGetAttributeByResourceId() throws ContractException {
+        long startTime  = System.nanoTime();
+        String resourceId = "resource:571971ca-932f-4e39-bc8d-475778f44401";
+        for (int i = 0; i < 1000; i++) {
+            byte[] attributes = contract.evaluateTransaction("FindAttributeByResourceId", resourceId);
+
+            //log.info(new String(invokeResult));
+        }
+        long endTime = System.nanoTime();
+        log.error("执行时间：{}ms",(endTime-startTime) / 1000000.0); // 5559 ms
+    }
+    @Test
+    public void testAddPrivateAttribute() throws ContractException {
+        long startTime  = System.nanoTime();
+        for (int i = 0; i < 1000; i++) {
+            Transaction transaction = contract.createTransaction("BuyPrivateAttribute")
+                    .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+            BuyPrivateAttributeRequest request = new BuyPrivateAttributeRequest();
+            request.setAttributeId("attribute:private:resource:571971ca-932f-4e39-bc8d-475778f44401:occupation0");
+            request.setBuyer("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
+            request.setSeller("user:654455774f546f365130343964584e6c636a457354315539593278705a5735304c45383953486c775a584a735a57526e5a58497355315139546d3979644767675132467962327870626d4573517a3156557a6f365130343962334a6e4d5335735a576b75626d56304c45395650555a68596e4a705979785050556835634756796247566b5a3256794c464e5550553576636e526f49454e68636d3973615735684c454d3956564d3dd41d8cd98f00b204e9800998ecf8427e");
+
+            byte[] invokeResult = transaction.evaluate(JsonUtil.obj2Json(request));
+
+            //log.info(JsonUtil.obj2Json(map));
+        }
+        long endTime = System.nanoTime();
+        log.error("执行时间：{}ms",(endTime-startTime) / 1000000.0);// 6628ms
     }
 
-    //@Autowired
-    //private AttributeController attributeController;
-    //
-    //@Test
-    //public void publishAttributeTest() throws ContractException, InterruptedException, TimeoutException, IOException, JSONException {
-    //    FileWriter fstream  = new FileWriter("C:\\Users\\lizhi\\Desktop\\attribute.csv",false);
-    //
-    //    BufferedWriter out = new BufferedWriter(fstream);
-    //
-    //    //out.write(jsonobj.getJSONObject("data").getString("data")+"\n");
-    //
-    //    ExecutorService executorService = Executors.newFixedThreadPool(10);
-    //
-    //    for (int i = 0; i < 10000; i++) {
-    //
-    //        Future<?> submit = executorService.submit(() -> {
-    //            try {
-    //                exeThread(out);
-    //            } catch (ContractException e) {
-    //                throw new RuntimeException(e);
-    //            } catch (InterruptedException e) {
-    //                throw new RuntimeException(e);
-    //            } catch (TimeoutException e) {
-    //                throw new RuntimeException(e);
-    //            } catch (IOException e) {
-    //                throw new RuntimeException(e);
-    //            }
-    //        });
-    //
-    //    }
-    //    out.flush();
-    //    TimeUnit.SECONDS.sleep(60);
-    //    executorService.shutdown();
-    //    out.close();
-    //    fstream.close();
-    //}
-    //
-    //public void exeThread(BufferedWriter out) throws ContractException, InterruptedException, TimeoutException, IOException {
-    //    AttributeRequest attributeRequest = new AttributeRequest();
-    //    attributeRequest.setType("PRIVATE");
-    //    attributeRequest.setResourceId("resource:8b395393-c556-4273-9ee3-3c158ecde223");
-    //    attributeRequest.setOwnerId("user:x509::CN=Admin@org1.example.com,OU=admin,L=San Francisco,ST=California,C=US::CN=ca.org1.example.com,O=org1.example.com,L=San Francisco,ST=California,C=US");
-    //    attributeRequest.setKey("occupation-"+ UUID.randomUUID().toString());
-    //    attributeRequest.setValue("doctor");
-    //    attributeRequest.setMoney(0);
-    //    attributeRequest.setNotBefore("1669791474807");
-    //    attributeRequest.setNotAfter("1672383443000");
-    //    JsonData jsonData = attributeController.publish(attributeRequest);
-    //    System.out.println(jsonData);
-    //    JSONObject data = jsonData.getData(new TypeReference<JSONObject>() {
-    //    });
-    //    String attributeId = data.getString("data");
-    //    synchronized (AttributeTest.class) {
-    //        out.write(attributeId+"\n");
-    //        out.flush();
-    //    }
-    //}
+    @Test
+    public void testGetAttributeByAttributeID() throws ContractException {
+        long startTime  = System.nanoTime();
+        String attributeId = "attribute:private:resource:571971ca-932f-4e39-bc8d-475778f44401:occupation0";
+        for (int i = 0; i < 1000; i++) {
+            Transaction transaction = contract.createTransaction("FindAttributeById")
+                    .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+            byte[] invokeResult = transaction.evaluate(attributeId);
+
+            //log.info(new String(invokeResult));
+        }
+        long endTime = System.nanoTime();
+        log.error("执行时间：{}ms",(endTime-startTime) / 1000000.0); // 5301ms
+    }
+
 
 
 }

@@ -49,7 +49,8 @@ func Setup() {
 
 	setupLogOutput()
 	setupGoroutinePool()
-	setupRedis()
+	// 先临时不使用Redis
+	//setupRedis()
 }
 
 func setupGoroutinePool() {

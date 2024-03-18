@@ -58,11 +58,12 @@ public class UserController {
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(allUsers, User[].class));
     }
     @PostMapping("/add")
-    public JsonData add() throws ContractException, InterruptedException, TimeoutException {
+    public JsonData add(@RequestParam("org")String org) throws ContractException, InterruptedException, TimeoutException {
         Transaction transaction = contract.createTransaction("CreateUser")
                 .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
         User user = User.builder()
                 .money(100)
+                .org(org)
                 .build();
         byte[] invokeResult = transaction.submit(JSON.toJSONString(user));
         log.info("调用结果:" + new String(invokeResult));

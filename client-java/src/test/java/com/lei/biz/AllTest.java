@@ -42,7 +42,7 @@ public class AllTest {
     @Test
     public void registerUser() throws ContractException, InterruptedException, TimeoutException {
         long startTime = System.currentTimeMillis();
-        JsonData res = userController.add();
+        JsonData res = userController.add("org1");
         long endTime = System.currentTimeMillis();
         log.info("res={}", res);
         log.info("执行时间={}ms",endTime-startTime);

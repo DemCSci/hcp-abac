@@ -9,16 +9,26 @@ import com.lei.util.JsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.fabric.gateway.Contract;
-import org.hyperledger.fabric.gateway.ContractException;
-import org.hyperledger.fabric.gateway.Network;
-import org.hyperledger.fabric.gateway.Transaction;
-import org.hyperledger.fabric.sdk.Peer;
+import org.hyperledger.fabric.gateway.*;
+import org.hyperledger.fabric.gateway.impl.ContractImpl;
+import org.hyperledger.fabric.gateway.impl.GatewayImpl;
+import org.hyperledger.fabric.gateway.spi.CommitHandler;
+import org.hyperledger.fabric.gateway.spi.CommitHandlerFactory;
+import org.hyperledger.fabric.protos.common.Common;
+import org.hyperledger.fabric.protos.peer.ProposalResponsePackage;
+import org.hyperledger.fabric.sdk.*;
+import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
+import org.hyperledger.fabric.sdk.exception.ProposalException;
+import org.hyperledger.fabric.sdk.transaction.ProposalBuilder;
+import org.hyperledger.fabric.sdk.transaction.TransactionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.json.Json;
+import java.io.*;
+import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -35,6 +45,16 @@ public class AttributeController {
 
     @Autowired
     private Network network;
+
+    @Autowired
+    private Channel channel;
+
+    @Autowired
+    private Gateway gateway;
+
+    // 经过客户端验证的 peer 的背书响应
+    Collection<ProposalResponse> validProposalResponses;
+
 
     @GetMapping("/attributes")
     @ApiOperation("根据用户id查找该用户的所有属性")
@@ -68,6 +88,106 @@ public class AttributeController {
         Map<String, String > res = new HashMap(2);
         res.put("txId", transactionId);
         res.put("data", JsonUtil.obj2Json(invokeResult));
+        return JsonData.buildSuccess(res);
+    }
+
+
+    // 尝试只进行背书，不提交到orderer节点
+    @PostMapping("/addAttributeOnlyPeer")
+    @ApiOperation("增加属性(只进行背书)")
+    public JsonData  addAttributeOnlyPeer(@RequestBody AttributeRequest request) throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException, IOException {
+
+        TransactionProposalRequest transactionProposalRequest = network.getGateway().getClient().newTransactionProposalRequest();
+        transactionProposalRequest.setChaincodeName("abac");
+        transactionProposalRequest.setChaincodeLanguage(TransactionRequest.Type.GO_LANG);
+        transactionProposalRequest.setFcn("AddAttribute");
+        Attribute attribute = Attribute.builder()
+                .id("attribute:" + UUID.randomUUID())
+                .type(AttributeTypeEnum.PUBLIC.name())
+                .ownerId(request.getOwnerId())
+                .key(request.getKey())
+                .value(request.getValue())
+                .notBefore(request.getNotBefore())
+                .notAfter(request.getNotAfter())
+                .build();
+
+        transactionProposalRequest.setArgs(JsonUtil.obj2Json(attribute));
+        Collection<ProposalResponse> proposalResponses = channel.sendTransactionProposal(transactionProposalRequest,
+                network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+
+        // 自己验证一下
+        validProposalResponses = validatePeerResponses(proposalResponses);
+
+        Map<String, String > res = new HashMap(2);
+        res.put("txId", proposalResponses.toString());
+        return JsonData.buildSuccess(res);
+    }
+
+    // 验证 peer 节点背书的是否正确
+    private Collection<ProposalResponse> validatePeerResponses(final Collection<ProposalResponse> proposalResponses)
+            throws ContractException {
+        final Collection<ProposalResponse> validResponses = new ArrayList<>();
+        final Collection<String> invalidResponseMsgs = new ArrayList<>();
+        proposalResponses.forEach(response -> {
+            String peerUrl = response.getPeer() != null ? response.getPeer().getUrl() : "<unknown>";
+            if (response.getStatus().equals(ChaincodeResponse.Status.SUCCESS)) {
+                log.debug(String.format("validatePeerResponses: valid response from peer %s", peerUrl));
+                validResponses.add(response);
+            } else {
+                log.warn(String.format("validatePeerResponses: invalid response from peer %s, message %s", peerUrl, response.getMessage()));
+                invalidResponseMsgs.add(response.getMessage());
+            }
+        });
+
+        if (validResponses.size() < 1) {
+            String msg = String.format("No valid proposal responses received. %d peer error responses: %s",
+                    invalidResponseMsgs.size(), String.join("; ", invalidResponseMsgs));
+            log.error(msg);
+            throw new ContractException(msg, proposalResponses);
+        }
+
+        return validResponses;
+    }
+
+
+    // 只提交到orderer节点
+    @PostMapping("/addAttributeOnlyOrder")
+    @ApiOperation("增加属性(只发送到orderer节点)")
+    public JsonData  addAttributeOnlyOrder() throws ContractException, InterruptedException, TimeoutException, InvalidArgumentException, ProposalException, IOException, ClassNotFoundException, NoSuchMethodException {
+
+        ProposalResponse proposalResponse = validProposalResponses.iterator().next();
+        for (int i = 0; i < 10000; i++) {
+            Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
+                    .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
+            channel.sendTransaction(validProposalResponses, transactionOptions);
+        }
+
+//        Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
+//                .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
+//        channel.sendTransaction(validProposalResponses, transactionOptions);
+
+//        GatewayImpl gatewayImpl = (GatewayImpl)gateway;
+//        CommitHandlerFactory commitHandlerFactory = gatewayImpl.getCommitHandlerFactory();
+//        CommitHandler commitHandler = commitHandlerFactory.create(proposalResponse.getTransactionID(), network);
+//        commitHandler.startListening();
+//
+//        try {
+//            Channel.TransactionOptions transactionOptions = Channel.TransactionOptions.createTransactionOptions()
+//                    .nOfEvents(Channel.NOfEvents.createNoEvents()); // Disable default commit wait behaviour
+//            channel.sendTransaction(validProposalResponses, transactionOptions)
+//                    .get(5, TimeUnit.MINUTES);
+//        } catch (TimeoutException e) {
+//            commitHandler.cancelListening();
+//            throw e;
+//        } catch (Exception e) {
+//            commitHandler.cancelListening();
+//            throw new ContractException("Failed to send transaction to the orderer", e);
+//        }
+//
+//        commitHandler.waitForEvents(5, TimeUnit.MINUTES);
+
+        Map<String, String > res = new HashMap(2);
+        //res.put("txId", proposalResponse.getTransactionID());
         return JsonData.buildSuccess(res);
     }
 
@@ -109,7 +229,7 @@ public class AttributeController {
      */
     @GetMapping("/findByResourceId")
     @ApiOperation("根据资源id查找属性")
-    public JsonData find(String resourceId) throws ContractException {
+    public JsonData find(@RequestParam("resourceId")String resourceId) throws ContractException {
         byte[] attributes = contract.evaluateTransaction("FindAttributeByResourceId", resourceId);
 
         return JsonData.buildSuccess(JsonUtil.bytes2Obj(attributes, Attribute[].class));
@@ -138,5 +258,19 @@ public class AttributeController {
     }
 
 
+    @GetMapping("/FindAttributeById")
+    @ApiOperation("根据属性id查询属性")
+    public JsonData findAttributeById(@RequestParam("attributeId") String attributeId) throws ContractException {
+        Transaction transaction = contract.createTransaction("FindAttributeById")
+                .setEndorsingPeers(network.getChannel().getPeers(EnumSet.of(Peer.PeerRole.ENDORSING_PEER)));
+        byte[] attribute = transaction.evaluate(attributeId);
+        Map<String, Object> map = new HashMap<>(1);
+        if (attribute.length != 0) {
+            map.put("data", JsonUtil.bytes2Obj(attribute, Attribute.class));
+        }else {
+            map.put("data", 0);
+        }
+        return JsonData.buildSuccess(map);
+    }
 
 }
