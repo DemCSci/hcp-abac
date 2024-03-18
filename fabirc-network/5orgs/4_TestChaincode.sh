@@ -11,7 +11,7 @@ source envpeer1org1
 peer lifecycle chaincode package basic.tar.gz --path chaincode-go --lang golang --label abac
 peer lifecycle chaincode install basic.tar.gz
 peer lifecycle chaincode queryinstalled
-source envpeer1web
+source envpeer1org3
 peer lifecycle chaincode install basic.tar.gz
 peer lifecycle chaincode queryinstalled
 source envpeer1org2
@@ -35,15 +35,19 @@ peer lifecycle chaincode queryapproved -C testchannel -n abac --sequence $CHAINC
 source envpeer1org2
 peer lifecycle chaincode approveformyorg -o orderer2.council.lei.net:7054 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
 peer lifecycle chaincode queryapproved -C testchannel -n abac --sequence $CHAINCODE_SEQUENCE
-source envpeer1web
+source envpeer1org3
 peer lifecycle chaincode approveformyorg -o orderer3.council.lei.net:7057 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
 peer lifecycle chaincode queryapproved -C testchannel -n abac --sequence $CHAINCODE_SEQUENCE
 
 source envpeer1org4
-peer lifecycle chaincode approveformyorg -o orderer4.council.lei.net:7060 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+#peer lifecycle chaincode approveformyorg -o orderer4.council.lei.net:7060 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+peer lifecycle chaincode approveformyorg -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+
 peer lifecycle chaincode queryapproved -C testchannel -n abac --sequence $CHAINCODE_SEQUENCE
 source envpeer1org5
-peer lifecycle chaincode approveformyorg -o orderer5.council.lei.net:7063 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+#peer lifecycle chaincode approveformyorg -o orderer5.council.lei.net:7063 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+peer lifecycle chaincode approveformyorg -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA  --channelID testchannel --name abac --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --waitForEvent  --package-id $CHAINCODE_ID
+
 peer lifecycle chaincode queryapproved -C testchannel -n abac --sequence $CHAINCODE_SEQUENCE
 #检查链码批准状态
 source envpeer1org1
@@ -51,15 +55,15 @@ peer lifecycle chaincode checkcommitreadiness -o orderer1.council.lei.net:7051 -
 
 #提交批准
 source envpeer1org1
-peer lifecycle chaincode commit -o orderer2.council.lei.net:7054 --tls --cafile $ORDERER_CA --channelID testchannel --name abac  --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.web.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.org4.lei.net:7551 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE
+peer lifecycle chaincode commit -o orderer2.council.lei.net:7054 --tls --cafile $ORDERER_CA --channelID testchannel --name abac  --version $CHAINCODE_VERSION --sequence $CHAINCODE_SEQUENCE --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.org3.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.org4.lei.net:7551 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE
 peer lifecycle chaincode querycommitted --channelID testchannel --name abac -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE
 
 #初始化
 #下面的用不到
-##peer chaincode invoke --isInit -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA --channelID testchannel --name abac --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.web.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE -c '{"Args":["InitLedger"]}'
+##peer chaincode invoke --isInit -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA --channelID testchannel --name abac --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.org3.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE -c '{"Args":["InitLedger"]}'
 
 
 #sleep 5
-#peer chaincode invoke -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA --channelID testchannel --name basic --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.web.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE -c '{"Args":["GetAllProjects"]}'
+#peer chaincode invoke -o orderer1.council.lei.net:7051 --tls --cafile $ORDERER_CA --channelID testchannel --name basic --peerAddresses peer1.org1.lei.net:7251 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE --peerAddresses peer1.org3.lei.net:7351 --tlsRootCertFiles $CORE_PEER_TLS_ROOTCERT_FILE -c '{"Args":["GetAllProjects"]}'
 # Error: endorsement failure during invoke. response: status:500 message:"make sure the chaincode fabcar has been successfully defined on channel testchannel and try again: chaincode definition for 'basic' exists, but chaincode is not installed"
 # approveformyorg 的链码包与 install 的链码包ID不一致

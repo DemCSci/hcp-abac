@@ -8,9 +8,9 @@ mkdir -p $LOCAL_CA_PATH/org1.lei.net/assets
 cp $LOCAL_CA_PATH/org1.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/org1.lei.net/assets/ca-cert.pem
 cp $LOCAL_CA_PATH/council.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/org1.lei.net/assets/tls-ca-cert.pem
 
-mkdir -p $LOCAL_CA_PATH/web.lei.net/assets 
-cp $LOCAL_CA_PATH/web.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/web.lei.net/assets/ca-cert.pem
-cp $LOCAL_CA_PATH/council.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/web.lei.net/assets/tls-ca-cert.pem
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/assets 
+cp $LOCAL_CA_PATH/org3.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/org3.lei.net/assets/ca-cert.pem
+cp $LOCAL_CA_PATH/council.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/org3.lei.net/assets/tls-ca-cert.pem
 
 mkdir -p $LOCAL_CA_PATH/org2.lei.net/assets
 cp $LOCAL_CA_PATH/org2.lei.net/ca/crypto/ca-cert.pem $LOCAL_CA_PATH/org2.lei.net/assets/ca-cert.pem
@@ -122,49 +122,49 @@ cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org1.lei.net/registers
 cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org1.lei.net/registers/peer1/msp/config.yaml
 echo "End org1============================="
 
-echo "Start Web============================="
+echo "Start org3============================="
 echo "Enroll User1"
-export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/web.lei.net/registers/user1
-export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/web.lei.net/assets/ca-cert.pem
+export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/org3.lei.net/registers/user1
+export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/org3.lei.net/assets/ca-cert.pem
 export FABRIC_CA_CLIENT_MSPDIR=msp
-fabric-ca-client enroll -d -u https://user1:user1@web.lei.net:7350
-mkdir -p $LOCAL_CA_PATH/web.lei.net/registers/user1/msp/admincerts
+fabric-ca-client enroll -d -u https://user1:user1@org3.lei.net:7350
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/registers/user1/msp/admincerts
 
 echo "Enroll Admin1"
-export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/web.lei.net/registers/admin1
-export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/web.lei.net/assets/ca-cert.pem
+export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/org3.lei.net/registers/admin1
+export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/org3.lei.net/assets/ca-cert.pem
 export FABRIC_CA_CLIENT_MSPDIR=msp
-fabric-ca-client enroll -d -u https://admin1:admin1@web.lei.net:7350
-mkdir -p $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp/admincerts
-cp $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp/admincerts/cert.pem
+fabric-ca-client enroll -d -u https://admin1:admin1@org3.lei.net:7350
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp/admincerts
+cp $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp/admincerts/cert.pem
 
 echo "Enroll Peer1"
 # for identity
-export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/web.lei.net/registers/peer1
-export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/web.lei.net/assets/ca-cert.pem
+export FABRIC_CA_CLIENT_HOME=$LOCAL_CA_PATH/org3.lei.net/registers/peer1
+export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/org3.lei.net/assets/ca-cert.pem
 export FABRIC_CA_CLIENT_MSPDIR=msp
-fabric-ca-client enroll -d -u https://peer1:peer1@web.lei.net:7350
+fabric-ca-client enroll -d -u https://peer1:peer1@org3.lei.net:7350
 # for TLS
 export FABRIC_CA_CLIENT_MSPDIR=tls-msp
-export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/web.lei.net/assets/tls-ca-cert.pem
-fabric-ca-client enroll -d -u https://peer1web:peer1web@council.lei.net:7050 --enrollment.profile tls --csr.hosts peer1.web.lei.net
-cp $LOCAL_CA_PATH/web.lei.net/registers/peer1/tls-msp/keystore/*_sk $LOCAL_CA_PATH/web.lei.net/registers/peer1/tls-msp/keystore/key.pem
-mkdir -p $LOCAL_CA_PATH/web.lei.net/registers/peer1/msp/admincerts
-cp $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/web.lei.net/registers/peer1/msp/admincerts/cert.pem
+export FABRIC_CA_CLIENT_TLS_CERTFILES=$LOCAL_CA_PATH/org3.lei.net/assets/tls-ca-cert.pem
+fabric-ca-client enroll -d -u https://peer1org3:peer1org3@council.lei.net:7050 --enrollment.profile tls --csr.hosts peer1.org3.lei.net
+cp $LOCAL_CA_PATH/org3.lei.net/registers/peer1/tls-msp/keystore/*_sk $LOCAL_CA_PATH/org3.lei.net/registers/peer1/tls-msp/keystore/key.pem
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/registers/peer1/msp/admincerts
+cp $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/org3.lei.net/registers/peer1/msp/admincerts/cert.pem
 
-mkdir -p $LOCAL_CA_PATH/web.lei.net/msp/admincerts
-mkdir -p $LOCAL_CA_PATH/web.lei.net/msp/cacerts
-mkdir -p $LOCAL_CA_PATH/web.lei.net/msp/tlscacerts
-mkdir -p $LOCAL_CA_PATH/web.lei.net/msp/users
-cp $LOCAL_CA_PATH/web.lei.net/assets/ca-cert.pem $LOCAL_CA_PATH/web.lei.net/msp/cacerts/
-cp $LOCAL_CA_PATH/web.lei.net/assets/tls-ca-cert.pem $LOCAL_CA_PATH/web.lei.net/msp/tlscacerts/
-cp $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/web.lei.net/msp/admincerts/cert.pem
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/msp/admincerts
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/msp/cacerts
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/msp/tlscacerts
+mkdir -p $LOCAL_CA_PATH/org3.lei.net/msp/users
+cp $LOCAL_CA_PATH/org3.lei.net/assets/ca-cert.pem $LOCAL_CA_PATH/org3.lei.net/msp/cacerts/
+cp $LOCAL_CA_PATH/org3.lei.net/assets/tls-ca-cert.pem $LOCAL_CA_PATH/org3.lei.net/msp/tlscacerts/
+cp $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp/signcerts/cert.pem $LOCAL_CA_PATH/org3.lei.net/msp/admincerts/cert.pem
 
-cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/web.lei.net/msp/config.yaml
-cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/web.lei.net/registers/user1/msp
-cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/web.lei.net/registers/admin1/msp
-cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/web.lei.net/registers/peer1/msp
-echo "End Web============================="
+cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org3.lei.net/msp/config.yaml
+cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org3.lei.net/registers/user1/msp
+cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org3.lei.net/registers/admin1/msp
+cp $LOCAL_ROOT_PATH/config/config-msp.yaml $LOCAL_CA_PATH/org3.lei.net/registers/peer1/msp
+echo "End org3============================="
 
 echo "Start org2============================="
 echo "Enroll User1"

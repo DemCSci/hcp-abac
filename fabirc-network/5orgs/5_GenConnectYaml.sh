@@ -3,7 +3,7 @@
 ORG=soft
 P0PORT=7251
 CAPORT=7250
-cryptoPath=$LOCAL_CA_PATH/soft.ifantasy.net
+cryptoPath=$LOCAL_CA_PATH/soft.lei.net
 PEERPEM=$cryptoPath/assets/tls-ca-cert.pem
 CAPEM=$cryptoPath/assets/ca-cert.pem
 

@@ -11,12 +11,12 @@ organizations:
   soft:
     mspid: softMSP
     peers:
-    - peer1.soft.ifantasy.net
+    - peer1.soft.lei.net
     certificateAuthorities:
-    - soft.ifantasy.net
+    - soft.lei.net
 peers:
-  peer1.soft.ifantasy.net:
-    url: grpcs://peer1.soft.ifantasy.net:7251
+  peer1.soft.lei.net:
+    url: grpcs://peer1.soft.lei.net:7251
     tlsCACerts:
       pem: |
           -----BEGIN CERTIFICATE-----
@@ -35,12 +35,12 @@ peers:
           -----END CERTIFICATE-----
           
     grpcOptions:
-      ssl-target-name-override: peer1.soft.ifantasy.net
-      hostnameOverride: peer1.soft.ifantasy.net
+      ssl-target-name-override: peer1.soft.lei.net
+      hostnameOverride: peer1.soft.lei.net
 certificateAuthorities:
-  soft.ifantasy.net:
-    url: https://soft.ifantasy.net:7250
-    caName: soft.ifantasy.net
+  soft.lei.net:
+    url: https://soft.lei.net:7250
+    caName: soft.lei.net
     tlsCACerts:
       pem: 
         - |

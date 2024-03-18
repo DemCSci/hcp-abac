@@ -5,5 +5,5 @@ docker rmi $(docker images dev-* -q)
 docker rm $(docker ps -a | grep 'dev-*' | awk '{print $1}')
 sudo rm -rf orgs data
 docker volume prune
-docker-compose -f $LOCAL_ROOT_PATH/compose/docker-compose.yaml up -d council.ifantasy.net org1.ifantasy.net web.ifantasy.net org2.ifantasy.net
+docker-compose -f $LOCAL_ROOT_PATH/compose/docker-compose.yaml up -d council.lei.net org1.lei.net web.lei.net org2.lei.net
 sudo chmod 0777 -R orgs/

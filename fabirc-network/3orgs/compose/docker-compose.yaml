@@ -32,17 +32,17 @@ services:
     ports:
       - 7250:7050
 
-  web.lei.net:
-    container_name: web.lei.net
+  org3.lei.net:
+    container_name: org3.lei.net
     extends:
       file: docker-base.yaml
       service: ca-base
     command: sh -c 'fabric-ca-server start -d -b ca-admin:ca-adminpw --port 7050'
     environment:
-      - FABRIC_CA_SERVER_CSR_CN=web.lei.net
-      - FABRIC_CA_SERVER_CSR_HOSTS=web.lei.net
+      - FABRIC_CA_SERVER_CSR_CN=org3.lei.net
+      - FABRIC_CA_SERVER_CSR_HOSTS=org3.lei.net
     volumes:
-      - ${LOCAL_CA_PATH}/web.lei.net/ca:${DOCKER_CA_PATH}/ca
+      - ${LOCAL_CA_PATH}/org3.lei.net/ca:${DOCKER_CA_PATH}/ca
     ports:
       - 7350:7050
   
@@ -76,19 +76,19 @@ services:
     ports:
       - 7251:7251
       
-  peer1.web.lei.net:
-    container_name: peer1.web.lei.net
+  peer1.org3.lei.net:
+    container_name: peer1.org3.lei.net
     extends:
       file: docker-base.yaml
       service: peer-base
     environment:
-      - CORE_PEER_ID=peer1.web.lei.net
+      - CORE_PEER_ID=peer1.org3.lei.net
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7351
-      - CORE_PEER_ADDRESS=peer1.web.lei.net:7351
-      - CORE_PEER_LOCALMSPID=webMSP
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.web.lei.net:7351
+      - CORE_PEER_ADDRESS=peer1.org3.lei.net:7351
+      - CORE_PEER_LOCALMSPID=org3MSP
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org3.lei.net:7351
     volumes:
-      - ${LOCAL_CA_PATH}/web.lei.net/registers/peer1:${DOCKER_CA_PATH}/peer
+      - ${LOCAL_CA_PATH}/org3.lei.net/registers/peer1:${DOCKER_CA_PATH}/peer
     ports:
       - 7351:7351
 

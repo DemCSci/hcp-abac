@@ -9,7 +9,7 @@ echo "init terminal org4"
 export FABRIC_CFG_PATH=$LOCAL_ROOT_PATH/config
 export CORE_PEER_TLS_ENABLED=true
 export CORE_PEER_LOCALMSPID="org4MSP"
-export CORE_PEER_ADDRESS=peer1.org4.ifantasy.net:7551
-export CORE_PEER_TLS_ROOTCERT_FILE=$LOCAL_CA_PATH/org4.ifantasy.net/assets/tls-ca-cert.pem
-export CORE_PEER_MSPCONFIGPATH=$LOCAL_CA_PATH/org4.ifantasy.net/registers/admin1/msp
-export ORDERER_CA=$LOCAL_CA_PATH/org4.ifantasy.net/assets/tls-ca-cert.pem
+export CORE_PEER_ADDRESS=peer1.org4.lei.net:7551
+export CORE_PEER_TLS_ROOTCERT_FILE=$LOCAL_CA_PATH/org4.lei.net/assets/tls-ca-cert.pem
+export CORE_PEER_MSPCONFIGPATH=$LOCAL_CA_PATH/org4.lei.net/registers/admin1/msp
+export ORDERER_CA=$LOCAL_CA_PATH/org4.lei.net/assets/tls-ca-cert.pem
